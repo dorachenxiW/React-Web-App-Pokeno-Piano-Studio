@@ -9,17 +9,18 @@
 
 /* Set background color for the entire page */
 body {
-  background-color: #ffffe6;
+  background-color: #fefcf9;
 }
 
 /* top-navbar*/
 .top-navbar {
-  padding: 20px;
+  padding: 50px;
   display: flex;
   align-items: center;
   max-width: 1000px;
   margin: 0 auto;
 }
+
 .top-navbar h1 {
   color: #f1356d;
 }
@@ -30,6 +31,7 @@ body {
   margin-left: 16px;
   text-decoration: none;
   padding: 6px;
+  font-size: 20px;
 }
 .top-navbar a:hover {
   color: #f1356d;
@@ -41,6 +43,7 @@ body {
   display: flex;
   max-width: 1000px;
   margin: 0 auto;
+ 
 }
 
 .main-navbar .links {
@@ -48,10 +51,12 @@ body {
 }
 
 .main-navbar .links a {
-  margin-right: 40px;
+  margin-right: 80px;
   text-decoration: none;
-  color: #333; /* White */
+  color: #333;
+  font-size: 20px;
 }
+
 .main-navbar .links a:hover {
   color: #f1356d;
 }
