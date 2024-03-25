@@ -1,13 +1,88 @@
-body {
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+/* base styles */
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: "Quicksand";
+  color: #333;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Set background color for the entire page */
+body {
+  background-color: #ffffe6;
+}
+
+/* top-navbar*/
+.top-navbar {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.top-navbar h1 {
+  color: #f1356d;
+}
+.top-navbar .top-links {
+  margin-left: auto;
+}
+.top-navbar a {
+  margin-left: 16px;
+  text-decoration: none;
+  padding: 6px;
+}
+.top-navbar a:hover {
+  color: #f1356d;
+}
+
+/* main-navbar*/
+.main-navbar {
+  padding: 15px;
+  display: flex;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.main-navbar .links {
+  display: flex;
+}
+
+.main-navbar .links a {
+  margin-right: 40px;
+  text-decoration: none;
+  color: #333; /* White */
+}
+.main-navbar .links a:hover {
+  color: #f1356d;
+}
+
+
+
+
+.content {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+/* .main-navbar .links a {
+  margin-right: 10px;
+  text-decoration: none;
+  color: #333;
+} */
+
+
+/* blog previews / list */
+.blog-preview {
+  padding: 10px 16px;
+  margin: 20px 0;
+  border-bottom: 1px solid #fafafa;
+}
+.blog-preview:hover {
+  box-shadow: 1px 3px 5px rgba(0,0,0,0.1);
+}
+.blog-preview h2 {
+  font-size: 20px;
+  color: #f1356d;
+  margin-bottom: 8px;
 }
