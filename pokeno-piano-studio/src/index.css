@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap");
+
 
 /* base styles */
 * {
@@ -14,15 +16,25 @@ body {
 
 /* top-navbar*/
 .top-navbar {
-  padding: 50px;
+  padding: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1500px;
+  margin: auto;
+  background-color: black;
+}
+
+.logo-container {
   display: flex;
   align-items: center;
-  max-width: 1000px;
-  margin: 0 auto;
+  margin-right: auto;
 }
 
 .top-navbar h1 {
-  color: #f1356d;
+  font-family: 'Dancing Script', cursive;
+  color: #F4C2C2;
+  font-size: 70px;
 }
 .top-navbar .top-links {
   margin-left: auto;
@@ -41,9 +53,9 @@ body {
 .main-navbar {
   padding: 15px;
   display: flex;
-  max-width: 1000px;
-  margin: 0 auto;
- 
+  max-width: 1500px;
+  background-color: #F4C2C2;
+  margin-bottom: 0 auto;
 }
 
 .main-navbar .links {
@@ -61,33 +73,34 @@ body {
   color: #f1356d;
 }
 
+.home {
+  position: relative;
+}
 
+.piano-image {
+  width: 100%; /* Adjust the width to make the image larger */
+  height: auto; /* Maintain aspect ratio */
+}
+
+.quote-container {
+  position: absolute;
+  top: 350px; /* Adjust the vertical position as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: 90%; /* Adjust the width of the container */
+}
+.quote {
+  font-size: 70px; /* Adjust the font size as needed */
+  font-family: 'Dancing Script', cursive;
+  color: white; /* Text color */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add shadow for better visibility */
+}
 
 
 .content {
-  max-width: 1000px;
-  margin: 40px auto;
-  padding: 20px;
+  text-align: center; /* Center the content horizontally */
+  color: white; /* Change text color for better contrast */
 }
 
-/* .main-navbar .links a {
-  margin-right: 10px;
-  text-decoration: none;
-  color: #333;
-} */
 
-
-/* blog previews / list */
-.blog-preview {
-  padding: 10px 16px;
-  margin: 20px 0;
-  border-bottom: 1px solid #fafafa;
-}
-.blog-preview:hover {
-  box-shadow: 1px 3px 5px rgba(0,0,0,0.1);
-}
-.blog-preview h2 {
-  font-size: 20px;
-  color: #f1356d;
-  margin-bottom: 8px;
-}
