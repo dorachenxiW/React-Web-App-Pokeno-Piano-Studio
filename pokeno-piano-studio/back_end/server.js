@@ -1,30 +1,29 @@
 const express = require('express');
 const mysql = require('mysql');
-const app = express();
-const port = process.env.PORT || 5000; // Port number for your server
+const cors = require('cors');
 
-// MySQL connection configuration
+const app = express();
+app.use(cors());
+
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'zxcqw098',
+    password: 'password',
     database: 'PPS_db'
-  });
+})
 
-// Middleware to intercept favicon requests and return 204 status code
-app.get('/favicon.ico', (req, res) => res.status(204));
+app.get('/', (re,res) => {
+    return res.json("Hello from Backend!");
+})
 
-// Define a route
-app.get('/api/hello', (req, res) => {
-  res.send({ message: 'Hello from Express!' });
-});
+app.get('/users', (req,res) => {
+    const sql = "SELECT * FROM user";
+    db.query(sql, (err, data) => {
+        if (err) return res.json(err);
+        return res.json(data);
+    })
+})
 
-app.get('/', (req, res) => {
-    res.send('Welcome to my Express backend!');
-  });
-  
-
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+app.listen(5000, () => {
+    console.log("listening");
+})
