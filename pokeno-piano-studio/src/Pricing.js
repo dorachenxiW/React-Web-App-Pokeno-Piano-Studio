@@ -1,9 +1,76 @@
+import { useState, useEffect } from 'react';
+
 const Pricing = () => {
+    const [data, setData] = useState([]);
+
+    useEffect (() =>{
+        fetch('http://localhost:5000/pricing')
+        .then(res => res.json())
+        .then(data => setData(data))
+        .catch (err => console.log(err));
+
+    }, [])
+
     return (
         <div className="pricing">
-            <h2>Pricing</h2>
+            <div className="pricing-container">
+                <div className="pricing-image">
+                    <img src="/piano_room.png" alt="The Piano Room" />
+                </div>
+                
+                <div className="pricing-details">
+                    <h2>Fees</h2>
+                    <p>
+                        We highly recommend individual lessons as they provide a personalized approach tailored specifically to your skill level and learning style. However, for siblings who share similar proficiency levels, we offer the option to join group lessons. 
+                    </p>
+                    <table>
+                        <thead>
+                         <tr>
+                         <th>Lesson Type</th>
+                         <th>Duration</th>
+                         <th>Price</th>
+                         </tr>
+                        </thead>
+                        <tbody>
+                            {data.map(item => (
+                                <tr key={item.pricing_id}>
+                                <td>{item.lesson_type}</td>
+                                <td>{item.duration} minutes</td>
+                                <td>${item.price}/person</td>
+                               </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div className="policy">
+                <h2>Policy</h2>
+                <p>
+                CANCELLATION 
+                <br/><br/>
+                If the student cancels a lesson, fees must be paid in full if less than 24 hours notice is given before the arranged lesson time. Teachers reserve the right to cancel lessons, and will try to organise a make-up session for the student.
+                <br/><br/>
+                INSTRUMENT
+                <br/><br/>
+                Piano students must own a piano or keyboard to use for regular practice. Instrument hire is not included in our services but the teachers can assist in finding an instrument for the student.
+                <br/><br/>
+                LEARNING RESOURCES
+                <br/><br/>
+                Students must purchase resources such as learning books, and whatever else may be necessary for the student’s learning. Please discuss with the teacher at the start of lessons.
+                <br/><br/>
+                PRACTICE
+                <br/><br/>
+                We expect our students to practice on a regular basis (recommended everyday) as this is vital in the student’s progress in their instrument.
+                Younger students are given specific practice routines in their homework book, and older students are expected to complete a certain amount of practice every week.
+                <br/><br/>
+                CONTRACT
+                <br/><br/>
+                We reserve the right to dismiss students if they do not attend lessons regularly, fail to practice to a certain standard, or misbehave significantly in lessons.
+                </p>
+            </div>
         </div>
+
     );
 }
- 
+
 export default Pricing;

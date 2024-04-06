@@ -24,6 +24,14 @@ app.get('/users', (req,res) => {
     })
 })
 
+app.get('/pricing', (req,res) =>{
+    const sql = "SELECT * FROM pricing";
+    db.query(sql,(err, data) => {
+        if (err) return res.json(err);
+        return res.json(data);
+    })
+})
+
 app.listen(5000, () => {
     console.log("listening");
 })

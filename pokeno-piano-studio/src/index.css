@@ -38,6 +38,7 @@ body {
 }
 .top-navbar .top-links {
   margin-left: auto;
+  padding-right: 30px;
 }
 .top-navbar a {
   margin-left: 16px;
@@ -57,6 +58,7 @@ body {
   background-color: #F4C2C2;
   margin-bottom: 0 auto;
 }
+
 
 .main-navbar .links {
   display: flex;
@@ -104,3 +106,107 @@ body {
 }
 
 
+/* about us */
+.aboutUs-container {
+  text-align: center;
+  margin: auto;
+  max-width: 900px;
+  padding: 20px;
+}
+
+.aboutUs-content {
+  background-color: #f8f8f8;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.aboutUs-content p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.aboutUs-content h2 {
+  font-size: 35px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* pricing page */
+.pricing {
+  text-align: center;
+}
+
+.pricing-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pricing-image {
+  flex: 1;
+}
+
+.pricing-image img {
+  max-width: 80%;
+}
+
+.pricing-details {
+  flex: 1;
+  align-self: flex-start; /* Align the pricing details container to the start of the flex container */
+  padding-right: 50px;
+}
+.pricing-details table {
+  font-size: 20px; /* Adjust the font size as needed */
+  border-collapse: collapse;
+  width: 100%;
+  
+}
+.pricing-details th,
+.pricing-details td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+.pricing-details h2 {
+  font-size: 35px; /* Adjust the font size as needed */
+  padding: 20px 0; /* Adjust the padding as needed */
+}
+.pricing-details p {
+  font-size: 18px;
+  padding-bottom: 30px;
+  line-height: 2.0;
+}
+
+@media (max-width: 768px) {
+  .pricing-container {
+      flex-direction: column;
+  }
+
+  .pricing-details {
+      padding: 20px 0;
+  }
+}
+
+.policy {
+  background-color: #f2f2f2; /* Grey background color */
+  padding: 20px 50px 100px; /* Add padding for spacing */
+  margin-top: 20px; /* Add margin to separate from the pricing details */
+  text-align: left;
+
+}
+
+.policy h2 {
+  font-size: 35px; /* Adjust the font size as needed */
+  padding: 20px 0;
+  color: #333; /* Set the color of the heading */
+  text-align: center;
+}
+
+.policy p {
+  font-size: 18px; /* Adjust the font size as needed */
+  color: #555; /* Set the color of the text */
+}

@@ -6,8 +6,9 @@ const MainNavbar = () => {
             <div className="links">
                 <Link to="/">Home</Link>
                 <Link to="/aboutus">About Us</Link>
-                <Link to="/pricing">Pricing</Link>
-                <Link to="/contact">Contact</Link>
+                <Link to="/lessons">Lessons</Link>
+                <Link to="/pricing">Fees & Policy</Link>
+                <Link to="/contact">Contact Us</Link>
             </div>
         </nav>
     );
