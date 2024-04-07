@@ -210,3 +210,142 @@ body {
   font-size: 18px; /* Adjust the font size as needed */
   color: #555; /* Set the color of the text */
 }
+
+/* lessons page */
+
+.lessons {
+  text-align: center;
+}
+
+.lessons-container {
+  display: flex;
+  justify-content: space-between; /* Arrange items with space between */
+  align-items: center; /* Vertically center items */
+  padding: 20px;
+}
+
+.lessons-details {
+  flex: 1; /* Take up remaining space */
+  align-self: flex-start;
+  padding-right: 20px; /* Add some spacing between the details and image */
+  text-align: left; /* Align text to the left */
+}
+
+.lessons-details h2 {
+  font-size: 35px; /* Adjust the font size as needed */
+  padding: 20px 0; /* Adjust the padding as needed */
+  text-align: center;
+}
+
+.lessons-details p {
+  font-size: 18px;
+  padding-left: 30px;
+  padding-bottom: 30px;
+  line-height: 2.0;
+}
+
+.lessons-image {
+  flex: 1; /* Take up remaining space */
+}
+
+.lessons-image img {
+  max-width: 100%; /* Ensure image doesn't exceed container width */
+}
+
+.exam {
+  padding: 20px;
+  margin: 0 auto; /* Center the container horizontally */
+}
+
+.exam h2 {
+  font-size: 35px; /* Adjust the font size as needed */
+  padding: 20px 0; /* Adjust the padding as needed */
+  text-align: center;
+  color:white
+}
+.exam p {
+  max-width: 700px; /* Adjust the maximum width as needed */
+  margin: 0 auto; /* Center the text horizontally */
+  text-align: center;
+  font-size: 18px;
+  color: whitesmoke;
+  line-height: 1.5;
+  padding-bottom: 50px;
+}
+.exam-link {
+  padding-top: 20px;
+  color: white;
+}
+
+/* Contact page */
+.contact {
+  display: flex;
+}
+
+.contact-message {
+  flex: 1;
+  display: flex;
+  justify-content: space-between; /* Arrange items with space between */
+  padding: 20px;
+}
+
+.contact-details {
+  flex: 1; /* Take up remaining space */
+  padding:20px; /* Add some spacing between the details and image */
+  text-align: left; /* Align text to the left */
+}
+
+.contact-details h2 {
+    font-size: 35px; /* Adjust the font size as needed */
+    padding: 20px 20px 50px; /* Adjust the padding as needed */
+    text-align: center;
+}
+  
+.contact-details p {
+   font-size: 18px;
+   padding-left: 130px;
+   padding-bottom: 30px;
+   line-height: 1.5;
+ }  
+
+.contact-form {
+  flex: 1;
+}
+
+.contact-form form {
+    display: flex;
+    flex-direction: column;
+}
+  
+.contact-form label {
+  margin-bottom: 10px;
+  text-align: left;
+}
+  
+.contact-form input,
+.contact-form textarea {
+  width: 75%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+  
+.contact-form button {
+  width: 20%;
+  font-size: 18px;
+  padding: 13px;
+  background-color:#F4C2C2;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 15px;
+  margin-left: 170px;
+  }
+  
+.contact-form button:hover {
+  background-color: #f1356d;
+  }
+  

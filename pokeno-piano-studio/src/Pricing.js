@@ -21,7 +21,7 @@ const Pricing = () => {
                 <div className="pricing-details">
                     <h2>Fees</h2>
                     <p>
-                        We highly recommend individual lessons as they provide a personalized approach tailored specifically to your skill level and learning style. However, for siblings who share similar proficiency levels, we offer the option to join group lessons. 
+                        We only offer individual lessons as they provide a personalised approach tailored specifically to student's skill level and learning style. 
                     </p>
                     <table>
                         <thead>
