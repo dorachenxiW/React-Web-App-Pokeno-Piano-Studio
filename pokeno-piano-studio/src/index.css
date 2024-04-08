@@ -349,3 +349,9 @@ body {
   background-color: #f1356d;
   }
   
+.custom-button-color {
+  background-color: #F4C2C2;
+  border-color: #F4C2C2; /* Optional: change border color to match background */
+  color: #555; /* Optional: change text color to contrast with background */
+}
+

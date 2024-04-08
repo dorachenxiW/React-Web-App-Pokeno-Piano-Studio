@@ -1,3 +1,4 @@
+
 import TopNavbar from './TopNavbar';
 import MainNavbar from './MainNavbar';
 import Home from './Home'
@@ -8,14 +9,17 @@ import AboutUs from './AboutUs';
 import Pricing from './Pricing';
 import Contact from './Contact';
 import Lessons from './Lessons';
+import Dashboard from './Dashboard';
 
 
 function App() {
+  // const [isLoggedIn, setIsloggedIn] = useState(false);
+  
   return (
     <Router>
       <div className="App">
-        <TopNavbar />
-        <MainNavbar />
+          <TopNavbar /> 
+          <MainNavbar />
       </div>
       <div className="content">
         <Switch>
@@ -40,6 +44,9 @@ function App() {
           <Route path="/contact">
             <Contact />
           </Route>
+          <Route path="/dashboard">
+                        <Dashboard />
+                    </Route>
         </Switch>
         
       </div>
