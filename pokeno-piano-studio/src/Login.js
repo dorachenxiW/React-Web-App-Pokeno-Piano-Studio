@@ -10,6 +10,8 @@ const Login = () => {
     })
     const history = useHistory()
 
+    axios.defaults.withCredentials = true;
+
     const handleSubmit = (event) => {
         event.preventDefault();
         axios.post("http://localhost:5000/login", values)
@@ -17,7 +19,7 @@ const Login = () => {
             if (res.data.Status === "Success") {
                 history.push('/dashboard')
             } else {
-                alert("Error");
+                alert(res.data.Error);
             }
         })
         .then(err => console.log(err));
