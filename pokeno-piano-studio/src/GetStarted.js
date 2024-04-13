@@ -7,7 +7,8 @@ const GetStarted = () => {
         first_name: '',
         last_name: '',
         email: '',
-        password: ''
+        password: '',
+        role: 'student' // Setting default role to 'student'
     })
     const history = useHistory()
 
@@ -18,7 +19,7 @@ const GetStarted = () => {
             if (res.data.Status === "Success") {
                 history.push('/login')
             } else {
-                alert("Error");
+                alert("Error: " + res.data.error); // Display specific error message from backend
             }
         })
         .then(err => console.log(err));
@@ -55,6 +56,10 @@ const GetStarted = () => {
                                     <input type="password" className="form-control" id="password" name="password"  minLength="5"
                                     onChange = {e => setValues({...values, password: e.target.value})}
                                     required />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="role">Role</label>
+                                    <input type="text" className="form-control" id="role" name="role" value={values.role} disabled />
                                 </div>
                                 <p>
                                 Note: Password must be at least 5 characters long. 

@@ -28,7 +28,7 @@ app.get('/', (re,res) => {
 })
 
 app.get('/users', (req,res) => {
-    const sql = "SELECT * FROM student";
+    const sql = "SELECT * FROM user";
     db.query(sql, (err, data) => {
         if (err) return res.json(err);
         return res.json(data);
@@ -64,31 +64,36 @@ app.get('/dashboard', verifyUser, (req, res) => {
 })
 
 app.post('/signup', (req, res) => {
-    const sql = "INSERT INTO student (`first_name`,`last_name`,`email`,`password`) VALUES (?)";
+    const sql = "INSERT INTO user (`first_name`,`last_name`,`email`,`role`,`password`) VALUES (?)";
     bcrypt.hash(req.body.password.toString(), salt, (err, hash) => {
         if (err) return res.json({error: "Error for hashing password."})
         const values = [
             req.body.first_name,
             req.body.last_name,
             req.body.email,
+            req.body.role,
             hash
         ]
         db.query(sql, [values], (err, result) => {
-            if (err) return res.json({Eroor: "Inserting data error in server"});
+            if (err) {
+                console.error("Error inserting data:", err);
+                return res.json({Error: "Inserting data error in server"});
+            }
             return res.json ({Status: "Success"});
         })
     })
 })
 
 app.post('/login', (req, res) => {
-    const sql = "SELECT * FROM student WHERE email = ?";
+    const sql = "SELECT * FROM user WHERE email = ?";
     db.query(sql, [req.body.email], (err, data) => {
         if (err) return res.json({ error: "Login error in server" })
         if (data.length > 0) {
             bcrypt.compare(req.body.password.toString(), data[0].password, (err, response) => {
                 if (err) return res.json({ Error: "Password compare error" });
                 if (response) {
-                    const name = data[0].first_name + data[0].last_name;
+                    const name = data[0].first_name + " " + data[0].last_name;
+                    // console.log(name)
                     const token = jwt.sign({ name }, "jwt-secret-key", { expiresIn: '1d' });
                     res.cookie('token', token, { sameSite: 'None', secure: true }); // Set SameSite attribute
                     return res.json({ Status: "Success" });
