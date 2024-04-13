@@ -28,7 +28,7 @@ app.get('/', (re,res) => {
 })
 
 app.get('/users', (req,res) => {
-    const sql = "SELECT * FROM student";
+    const sql = "SELECT * FROM user";
     db.query(sql, (err, data) => {
         if (err) return res.json(err);
         return res.json(data);
@@ -64,7 +64,7 @@ app.get('/dashboard', verifyUser, (req, res) => {
 })
 
 app.post('/signup', (req, res) => {
-    const sql = "INSERT INTO student (`first_name`,`last_name`,`email`,`password`) VALUES (?)";
+    const sql = "INSERT INTO user (`first_name`,`last_name`,`email`,`password`) VALUES (?)";
     bcrypt.hash(req.body.password.toString(), salt, (err, hash) => {
         if (err) return res.json({error: "Error for hashing password."})
         const values = [
