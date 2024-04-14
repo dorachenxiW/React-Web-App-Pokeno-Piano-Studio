@@ -53,14 +53,32 @@ const verifyUser = (req, res, next) => {
                 return res.json({ Error: "Token is not okay" });
             } else {
                 req.name = decoded.name;
-                next();
+                req.email = decoded.email; // Access email from decoded token
+                const sql = "SELECT role FROM user WHERE email = ?";
+                db.query(sql, [req.email], (err, result) => {
+                    if (err) {
+                        console.error("Database error:", err); // Log database error
+                        return res.json({ Error: "Error fetching user's role" });
+                    }
+                    if (!result || result.length === 0) {
+                        return res.json({ Error: "User role not found" });
+                    }
+                    req.role = result[0].role;
+                    next();
+                });
             }
-        })
+        });
     }
-}
+};
 
-app.get('/dashboard', verifyUser, (req, res) => {
-    return res.json({ Status: "Success", name: req.name });
+
+
+app.get('/auth', verifyUser, (req, res) => {
+    return res.json({
+         Status: "Success", 
+         name: req.name,
+         role: req.role // Include the user's role in the response
+        });
 })
 
 app.post('/signup', (req, res) => {
@@ -94,8 +112,10 @@ app.post('/login', (req, res) => {
                 if (err) return res.json({ Error: "Password compare error" });
                 if (response) {
                     const name = data[0].first_name + " " + data[0].last_name;
+                    const email = req.body.email; // Extract email from request
+                    // const role = data[0].role;
                     // console.log(name)
-                    const token = jwt.sign({ name }, "jwt-secret-key", { expiresIn: '1d' });
+                    const token = jwt.sign({ name, email}, "jwt-secret-key", { expiresIn: '1d' });
                     res.cookie('token', token, { sameSite: 'None', secure: true }); // Set SameSite attribute
                     return res.json({ Status: "Success" });
                 } else {

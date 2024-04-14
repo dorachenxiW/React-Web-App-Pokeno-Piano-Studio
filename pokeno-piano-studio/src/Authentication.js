@@ -1,16 +1,20 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+// import {Route, Router, Switch, Redirect} from "react-router-dom";
+// import StudentDashboard from "./StudentDashboard";
+// import TeacherDashboard from "./TeacherDashboard";
+// import OwnerDashboard from "./OwnerDashboard";
 
-
-const Dashboard = () => {
+const Authentication = () => {
     const [auth, setAuth] = useState(false);
     const [message, setMessage] = useState('');
     const [name, setName] = useState('');
+    // const [role, setRole] = useState('');
 
     axios.defaults.withCredentials = true;
     useEffect (() => {
-        axios.get('http://localhost:5000/dashboard')
+        axios.get('http://localhost:5000/auth')
         .then(res => {
             if (res.data.Status === "Success") {
                 setAuth(true)
@@ -46,5 +50,4 @@ const Dashboard = () => {
         </div>
     );
 }
-
-export default Dashboard;
+export default Authentication;
