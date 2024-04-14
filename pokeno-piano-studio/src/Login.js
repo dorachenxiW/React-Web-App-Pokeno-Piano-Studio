@@ -17,13 +17,15 @@ const Login = () => {
         axios.post("http://localhost:5000/login", values)
         .then(res => {
             if (res.data.Status === "Success") {
-                history.push('/dashboard')
+                history.push('/auth'); // Redirect to the /auth route
             } else {
                 alert(res.data.Error);
             }
         })
-        .then(err => console.log(err));
+        .catch(err => console.error("Error logging in:", err));
     }
+    
+
     return ( 
         <div className="container">
             <div className="row justify-content-center">

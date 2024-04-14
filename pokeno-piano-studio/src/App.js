@@ -9,7 +9,7 @@ import AboutUs from './AboutUs';
 import Pricing from './Pricing';
 import Contact from './Contact';
 import Lessons from './Lessons';
-import Dashboard from './Dashboard';
+import Authentication from './Authentication';
 
 
 function App() {
@@ -44,9 +44,9 @@ function App() {
           <Route path="/contact">
             <Contact />
           </Route>
-          <Route path="/dashboard">
-                        <Dashboard />
-                    </Route>
+          <Route path="/auth">
+            <Authentication />
+          </Route>
         </Switch>
         
       </div>
