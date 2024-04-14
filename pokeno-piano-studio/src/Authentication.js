@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import StudentDashboard from "./StudentDashboard";
 import TeacherDashboard from "./TeacherDashboard";
+import AdminDashboard from "./AdminDashboard";
 
 const Authentication = () => {
     const [auth, setAuth] = useState(false);
@@ -31,6 +32,7 @@ const Authentication = () => {
                 <div>
                     {role === 'student' && <StudentDashboard name={name}/>}
                     {role === 'teacher' && <TeacherDashboard name={name}/>}
+                    {role === 'admin' && <AdminDashboard name={name}/>}
                 </div>
             ) : (
                 <div>

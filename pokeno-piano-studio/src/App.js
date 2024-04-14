@@ -48,9 +48,7 @@ function App() {
             <Authentication />
           </Route>
         </Switch>
-        
       </div>
-
     </Router>
     
   );
