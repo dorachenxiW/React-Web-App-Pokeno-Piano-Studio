@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import StudentDashboard from "./StudentDashboard";
-import AdminDashboard from "./AdminDashboard";
+import TeacherDashboard from "./TeacherDashboard";
 
 const Authentication = () => {
     const [auth, setAuth] = useState(false);
@@ -25,20 +25,12 @@ const Authentication = () => {
         })
     }, [])
 
-    const handleDelete = () => {
-        axios.get('http://localhost:5000/logout')
-        .then(res => {
-            window.location.reload(true); // Use window.location.reload to reload the page
-        }).catch(err => console.log(err));
-    }
-
     return (
         <div className="container mt-4">
             {auth ? (
                 <div>
-                    <button className='btn btn-danger' onClick={handleDelete}>Logout</button>
                     {role === 'student' && <StudentDashboard name={name}/>}
-                    {role === 'teacher' && <AdminDashboard name={name}/>}
+                    {role === 'teacher' && <TeacherDashboard name={name}/>}
                 </div>
             ) : (
                 <div>

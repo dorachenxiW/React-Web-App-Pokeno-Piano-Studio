@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const StudentDashboard = ({ name }) => {
-
+const TeacherDashboard = ({ name }) => {
     const handleDelete = () => {
         axios.get('http://localhost:5000/logout')
         .then(res => {
@@ -10,11 +9,11 @@ const StudentDashboard = ({ name }) => {
     }
     return (
         <div>
-            <h3>Welcome to Student Dashboard, {name}</h3>
-            {/* Add content specific to the student dashboard */}
+            <h3>Welcome to Teacher Dashboard, {name}</h3>
+            {/* Add content specific to the teacher dashboard */}
             <button className='btn btn-danger' onClick={handleDelete}>Logout</button>
         </div>
     );
 }
 
-export default StudentDashboard;
+export default TeacherDashboard;
