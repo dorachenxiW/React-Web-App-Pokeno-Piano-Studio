@@ -355,3 +355,49 @@ body {
   color: #555; /* Optional: change text color to contrast with background */
 }
 
+/* StudentDashboard.css */
+
+.dashboard-container {
+  display: flex;
+  background-color: #F4C2C2;
+  border: #f2f2f2;
+  height: 100vh; /* Fill the whole screen vertically */
+}
+
+.sidebar {
+  width: 299px; /* Set width for sidebar */
+  background-color: black; /* Set background color to black */
+  display: flex;
+  flex-direction: column;
+  padding: 20px; /* Add padding to the sidebar */
+}
+
+.sidebar-header {
+  padding: 20px;
+}
+
+.sidebar-header h3 {
+  margin-bottom: 20px;
+  color: #F4C2C2; 
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-menu a {
+  text-decoration: none;
+  color: #F4C2C2; /* Change text color for sidebar links */
+  padding: 25px;
+}
+
+.sidebar-menu a:hover {
+  text-decoration: underline;
+}
+
+.main-content {
+  flex: 1;
+  background-color: white;
+  margin: 20px;
+}
