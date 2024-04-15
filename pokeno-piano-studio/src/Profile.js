@@ -71,22 +71,25 @@ const Profile = () => {
               <table className="table table-bordered table-striped">
                 <tbody>
                   <tr>
-                    <td><strong>Name:</strong></td>
+                    <td><strong>First Name:</strong></td>
                     <td>
                       <input
                         type="text"
                         name="first_name"
                         value={editedData.first_name}
                         onChange={handleChange}
-                      />
+                      /></td>
+                    </tr>
+                  <tr>
+                    <td><strong>Last Name:</strong></td>
+                    <td>
                       <input
                         type="text"
                         name="last_name"
                         value={editedData.last_name}
                         onChange={handleChange}
-                      />
-                    </td>
-                  </tr>
+                      /></td>
+                    </tr>
                   <tr>
                     <td><strong>Email:</strong></td>
                     <td>
