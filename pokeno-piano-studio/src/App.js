@@ -1,4 +1,4 @@
-
+import { useState } from 'react';
 import TopNavbar from './TopNavbar';
 import MainNavbar from './MainNavbar';
 import Home from './Home'
@@ -10,16 +10,30 @@ import Pricing from './Pricing';
 import Contact from './Contact';
 import Lessons from './Lessons';
 import Authentication from './Authentication';
+//import Profile from "./Profile";
 
 
 function App() {
-  // const [isLoggedIn, setIsloggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Function to handle login
+  const handleLogin = () => {
+    // Perform login logic here
+    setIsLoggedIn(true);
+  };
+
+  // Function to handle logout
+  const handleLogout = () => {
+    // Perform logout logic here
+    setIsLoggedIn(false);
+  };
+
   
   return (
     <Router>
       <div className="App">
           <TopNavbar /> 
-          <MainNavbar />
+          {!isLoggedIn && <MainNavbar />} 
       </div>
       <div className="content">
         <Switch>
@@ -30,7 +44,7 @@ function App() {
             <GetStarted />
           </Route>
           <Route path="/login">
-            <Login />
+            <Login onLogin={handleLogin}/>
           </Route>
           <Route path="/aboutus">
             <AboutUs />
@@ -45,12 +59,11 @@ function App() {
             <Contact />
           </Route>
           <Route path="/auth">
-            <Authentication />
+            <Authentication onLogout={handleLogout}/>
           </Route>
         </Switch>
       </div>
     </Router>
-    
   );
 }
 

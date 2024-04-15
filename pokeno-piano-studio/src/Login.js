@@ -3,7 +3,7 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 import { useState } from 'react';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
     const [values, setValues] = useState ({
         email: '',
         password: ''
@@ -17,6 +17,7 @@ const Login = () => {
         axios.post("http://localhost:5000/login", values)
         .then(res => {
             if (res.data.Status === "Success") {
+                onLogin(); // Update authentication status in App component
                 history.push('/auth'); // Redirect to the /auth route
             } else {
                 alert(res.data.Error);

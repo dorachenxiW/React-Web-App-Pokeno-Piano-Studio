@@ -54,15 +54,16 @@ const verifyUser = (req, res, next) => {
             } else {
                 req.name = decoded.name;
                 req.email = decoded.email; // Access email from decoded token
-                const sql = "SELECT role FROM user WHERE email = ?";
+                const sql = "SELECT user_id, role FROM user WHERE email = ?";
                 db.query(sql, [req.email], (err, result) => {
                     if (err) {
                         console.error("Database error:", err); // Log database error
-                        return res.json({ Error: "Error fetching user's role" });
+                        return res.json({ Error: "Error fetching user's data" });
                     }
                     if (!result || result.length === 0) {
-                        return res.json({ Error: "User role not found" });
+                        return res.json({ Error: "User not found" });
                     }
+                    req.user_id = result[0].user_id;
                     req.role = result[0].role;
                     next();
                 });
@@ -77,12 +78,15 @@ app.get('/auth', verifyUser, (req, res) => {
     return res.json({
          Status: "Success", 
          name: req.name,
-         role: req.role // Include the user's role in the response
+         role: req.role, // Include the user's role in the response
+         user_id: req.user_id
         });
 })
 
 app.post('/signup', (req, res) => {
-    const sql = "INSERT INTO user (`first_name`,`last_name`,`email`,`role`,`password`) VALUES (?)";
+    const userSql = "INSERT INTO user (`first_name`,`last_name`,`email`,`role`,`password`) VALUES (?)";
+    const studentSql = "INSERT INTO student (`first_name`,`last_name`,`email`, `user_id`) VALUES (?)";
+    const getUserIdSql = "SELECT user_id FROM user WHERE email = ?";
 
     bcrypt.hash(req.body.password.toString(), salt, (err, hash) => {
         if (err) return res.json({error: "Error for hashing password."})
@@ -93,15 +97,37 @@ app.post('/signup', (req, res) => {
             req.body.role,
             hash
         ]
-        db.query(sql, [values], (err, result) => {
+        db.query(userSql, [values], (err, result) => {
             if (err) {
-                console.error("Error inserting data:", err);
-                return res.json({Error: "Inserting data error in server"});
+                console.error("Error inserting user data:", err);
+                return res.json({Error: "Inserting user data error in server"});
             }
-            return res.json ({Status: "Success"});
-        })
-    })
-})
+            // Fetch user_id of the inserted user
+            db.query(getUserIdSql, [req.body.email], (err, getUserIdResult) => {
+                if (err || getUserIdResult.length === 0) {
+                    console.error("Error fetching user_id:", err);
+                    return res.json({Error: "Error fetching user_id"});
+                }
+                const user_id = getUserIdResult[0].user_id;
+                // Insert into student table
+                const studentValues = [
+                    req.body.first_name,
+                    req.body.last_name,
+                    req.body.email,
+                    user_id,
+                ];
+                db.query(studentSql, [studentValues], (err, studentResult) => {
+                    if (err) {
+                        console.error("Error inserting student data:", err);
+                        return res.json({Error: "Inserting student data error in server"});
+                    }
+                    return res.json ({Status: "Success"});
+                });
+            });
+        });
+    });
+});
+
 
 app.post('/login', (req, res) => {
     const sql = "SELECT * FROM user WHERE email = ?";
@@ -133,6 +159,40 @@ app.get('/logout', (req, res) => {
     res.clearCookie('token');
     return res.json({Status: "Success"});
 })
+
+app.get('/profile', verifyUser, (req, res) => {
+    
+    const userEmail = req.email; // Extract email from req object
+
+    const sql = "SELECT * FROM student WHERE email = ?";
+    db.query(sql, [userEmail], (err, result) => {
+        if (err) {
+            console.error("Error fetching profile data:", err);
+            return res.status(500).json({ Error: "Internal server error" });
+        }
+        if (!result || result.length === 0) {
+            return res.status(404).json({ Error: "Profile not found" });
+        }
+        const profileData = result[0];
+        return res.json(profileData);
+    });
+});
+
+// Update profile route
+app.post('/profile', verifyUser, (req, res) => {
+    const user_id = req.user_id;
+
+    const { first_name, last_name, phone_number, email, bio } = req.body;
+
+    const sql = "UPDATE student SET first_name = ?, last_name = ?, phone_number = ?, email = ?, bio = ? WHERE user_id = ?";
+    db.query(sql, [first_name, last_name, phone_number, email, bio, user_id], (err, result) => {
+        if (err) {
+            console.error("Error updating profile data:", err);
+            return res.status(500).json({ Error: "Internal server error" });
+        }
+        return res.json({ Status: "Success" });
+    });
+});
 
 
 app.listen(5000, () => {
