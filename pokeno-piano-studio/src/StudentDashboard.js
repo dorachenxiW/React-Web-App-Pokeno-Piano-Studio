@@ -48,6 +48,7 @@ const StudentDashboard = ({ name, onLogout }) => {
         </div>
       </div>
       <div className="main-content">
+        {/* <h3>Welcome to Student Dashboard!</h3> */}
         <Switch>
           <Route path={`${path}/profile`} component={Profile} />
         </Switch>

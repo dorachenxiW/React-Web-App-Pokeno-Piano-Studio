@@ -401,3 +401,7 @@ body {
   background-color: white;
   margin: 20px;
 }
+
+.bio-row td {
+  height: 100px; /* Adjust the height to control the height of the bio row */
+}
