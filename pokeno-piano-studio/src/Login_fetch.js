@@ -11,7 +11,7 @@ const Login = () => {
     }, [])
     return ( 
         <div className="login">
-            <h2>This is the log in page</h2>
+            <h2>This is the log in pag ade</h2>
         
             <table>
                 <thead>
