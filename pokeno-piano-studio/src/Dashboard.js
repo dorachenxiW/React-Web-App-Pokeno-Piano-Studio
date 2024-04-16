@@ -33,7 +33,7 @@ const Dashboard = () => {
             {
                 auth?
                 <div>
-                    <h3>Welcome to the Dashbord, {name}</h3>
+                    <h3>Welcome to the Dashbord, {name}!</h3>
                     <button className='btn btn-danger' onClick={handleDelete}>Logout</button>
                 </div>
                 :
