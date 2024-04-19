@@ -161,11 +161,26 @@ app.get('/logout', (req, res) => {
 })
 
 app.get('/profile', verifyUser, (req, res) => {
-    
     const userEmail = req.email; // Extract email from req object
-
-    const sql = "SELECT * FROM student WHERE email = ?";
-    db.query(sql, [userEmail], (err, result) => {
+    const userRole = req.role; // Extract user's role from req object
+    
+    let sql;
+    switch (userRole) {
+        case 'admin':
+            console.log("going in admin")
+            sql = "SELECT * FROM admin WHERE email = ?";
+            break;
+        case 'student':
+            sql = "SELECT * FROM student WHERE email = ?";
+            break;
+        case 'teacher':
+            sql = "SELECT * FROM teacher WHERE email = ?";
+            break;
+        default:
+            return res.status(400).json({ Error: "Invalid user role" });
+    }
+    
+    db.query(sql,  [userEmail], (err, result) => {
         if (err) {
             console.error("Error fetching profile data:", err);
             return res.status(500).json({ Error: "Internal server error" });
