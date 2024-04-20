@@ -6,6 +6,11 @@ const Profile = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedData, setEditedData] = useState({});
     const [successMessage, setSuccessMessage] = useState('');
+    const [showChangePasswordForm, setShowChangePasswordForm] = useState(false);
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [changePasswordError, setChangePasswordError] = useState('');
     
     const token = localStorage.getItem('token'); // Retrieve the authentication token from local storage
     
@@ -27,6 +32,8 @@ const Profile = () => {
     const handleEdit = () => {
       setEditedData({ ...profileData });
       setIsEditing(true);
+      // Reset success message when editing starts
+      setSuccessMessage('');
     };
 
     const handleChange = (e) => {
@@ -57,15 +64,64 @@ const Profile = () => {
       })
       .catch(error => {
         console.error('Error updating profile:', error);
+        setChangePasswordError("Error changing password. Please try again.");
+      });
+    };
+    const handleChangePassword = () => {
+      setShowChangePasswordForm(true);
+      setSuccessMessage('');
+    };
+
+    const handleCancelChangePassword = () => {
+      setShowChangePasswordForm(false);
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    };
+
+    const handleSubmitChangePassword = () => {
+      if (newPassword !== confirmPassword) {
+          alert("New passwords do not match");
+          return;
+      }
+
+      axios.post('http://localhost:5000/change-password', {
+          oldPassword: oldPassword,
+          newPassword: newPassword
+      }, {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      })
+      .then(response => {
+          setSuccessMessage(response.data.message);
+          setShowChangePasswordForm(false);
+          setOldPassword('');
+          setNewPassword('');
+          setConfirmPassword('');
+           // Handle success
+          console.log('Password changed successfully');
+          alert('Password changed successfully');
+      })
+      .catch(error => {
+        // Handle error
+        console.error('An error occurred while changing password:', error.message);
+        if (error.response && error.response.status === 400 && error.response.data.error === 'Incorrect old password') {
+            alert('Incorrect old password. Please try again.');
+        } else {
+            alert('An error occurred while changing password. Please try again.');
+        }
       });
     };
 
     return (
-      <div className="container mt-5">
+      // <div className="container mt-5">
+      <div>
       <div className="row justify-content-center">
         <div className="col-md-8">
           <h2 className="text-center">My Profile</h2>
           {successMessage && <div className="alert alert-success">{successMessage}</div>} {/* Render success message */}
+          {changePasswordError && <div className="alert alert-danger">{changePasswordError}</div>} {/* Render password change error */}
           {isEditing ? (
             <div className="table-responsive">
               <table className="table table-bordered table-striped">
@@ -139,6 +195,7 @@ const Profile = () => {
               </table>
             </div>
           ) : (
+            // Viewing mode
             <div>
               <div className="table-responsive">
                 <table className="table table-bordered table-striped">
@@ -166,6 +223,7 @@ const Profile = () => {
                   </tbody>
                 </table>
               </div>
+              <div>
               <button className="btn btn-primary mb-3"
                       onClick={handleEdit}
                       style={{color: "black",
@@ -176,10 +234,67 @@ const Profile = () => {
                              padding: '0.6rem 1rem', // Increase padding to make the button bigger
                              fontSize: '1rem', // Increase font size to make the button bigger
                             }}>Edit</button>
+              </div>
+              <div>
+              <button className="btn btn-secondary mb-3"
+                      onClick={handleChangePassword}
+                      style={{color: "black",
+                             backgroundColor: "#F4C2C2",
+                             borderRadius: '8px',
+                             border: 'none', // Optionally remove the border to match the Link style
+                             outline: 'none', // Optionally remove the outline on focus
+                             padding: '0.6rem 1rem', // Increase padding to make the button bigger
+                             fontSize: '1rem'}}> Change Password
+              </button>  
+              </div>         
             </div>
           )}
         </div>
       </div>
+      {/* Change password form */}
+      {showChangePasswordForm && (
+                <div className="row justify-content-center">
+                    <div className="col-md-8">
+                        <h2 className="text-center">Change Password</h2>
+                        <div className="form-group">
+                            <label htmlFor="oldPassword">Old Password</label>
+                            <input
+                                type="password"
+                                className="form-control"
+                                id="oldPassword"
+                                value={oldPassword}
+                                onChange={e => setOldPassword(e.target.value)}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="newPassword">New Password</label>
+                            <input
+                                type="password"
+                                className="form-control"
+                                id="newPassword"
+                                value={newPassword}
+                                onChange={e => setNewPassword(e.target.value)}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="confirmPassword">Confirm New Password</label>
+                            <input
+                                type="password"
+                                className="form-control"
+                                id="confirmPassword"
+                                value={confirmPassword}
+                                onChange={e => setConfirmPassword(e.target.value)}
+                            />
+                        </div>
+                        <button className="btn btn-primary mr-2" onClick={handleSubmitChangePassword}>
+                            Submit
+                        </button>
+                        <button className="btn btn-secondary" onClick={handleCancelChangePassword}>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
     </div>
     );
   };
