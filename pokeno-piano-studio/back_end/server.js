@@ -180,8 +180,6 @@ const verifyUser = (req, res, next) => {
     }
 };
 
-
-
 app.get('/auth', verifyUser, (req, res) => {
     return res.json({
          Status: "Success", 
@@ -316,6 +314,66 @@ app.post('/profile', verifyUser, (req, res) => {
     });
 });
 
+// Route to handle changing password
+app.post('/change-password', verifyUser, (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+    const userEmail = req.email; // Extract email from verified user
+    console.log(userEmail)
+
+    // Fetch user data from database (this step is redundant since user is already verified)
+    const sql = 'SELECT * FROM user WHERE email = ?';
+    db.query(sql, [userEmail], (err, results) => {
+        if (err) {
+            console.error('Error fetching user data:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const user = results[0];
+
+        // Hash the entered old password for comparison
+        bcrypt.hash(oldPassword,salt, (err, hashedOldPassword) => {
+            if (err) {
+                console.error('Error hashing old password:', err);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+
+            // Compare the hashed old password with the hashed password stored in the database
+            bcrypt.compare(oldPassword, user.password, (err, isMatch) => {
+                if (err) {
+                    console.error('Error comparing passwords:', err);
+                    return res.status(500).json({ error: 'Internal server error' });
+                }
+            
+                if (!isMatch) {
+                    return res.status(400).json({ error: 'Incorrect old password' });
+                }
+            
+                // Hash the new password
+                bcrypt.hash(newPassword, salt, (err, hash) => {
+                    if (err) {
+                        console.error('Error hashing new password:', err);
+                        return res.status(500).json({ error: 'Internal server error' });
+                    }
+                    console.log(newPassword)
+                    // Update user's password in the database
+                    const updateSql = 'UPDATE user SET password = ? WHERE email = ?';
+                    db.query(updateSql, [hash, userEmail], (err, result) => {
+                        if (err) {
+                            console.error('Error updating password:', err);
+                            return res.status(500).json({ error: 'Internal server error' });
+                        }
+
+                        return res.status(200).json({ message: 'Password updated successfully' });
+                    });  
+                });
+            });
+        });
+    });
+});
 
 app.listen(5000, () => {
     console.log("listening");
