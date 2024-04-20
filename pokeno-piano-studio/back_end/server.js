@@ -35,6 +35,114 @@ app.get('/users', (req,res) => {
     })
 })
 
+app.get('/students', (req, res) => {
+    const sql = "SELECT * FROM student"; // Assuming 'students' is the table name containing student information
+    db.query(sql, (err, data) => {
+        if (err) {
+            console.error("Error fetching students:", err);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+        return res.json(data);
+    });
+});
+
+app.post('/students', (req, res) => {
+    const { first_name, last_name, email, phone_number} = req.body;
+    const role = 'student'; // Assuming the role is hardcoded as 'student'
+    const password = '$2b$10$/UHz6nobtXuBOk1xpPeGout0M3XwsH2XfGA5I8jTyvxkRZTRZVU5i'; // You may want to generate a random password or use a default one
+    const userSql = "INSERT INTO user (first_name, last_name, email, role, password) VALUES (?, ?, ?, ?, ?)";
+    const studentSql = "INSERT INTO student (first_name, last_name, email, phone_number,user_id) VALUES (?, ?, ?, ?, ?)";
+    db.query(userSql, [first_name, last_name, email, role, password], (err, result) => {
+        console.log(result)
+        if (err) {
+            console.error("Error adding user:", err);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+        const user_id = result.insertId; // Get the auto-generated user_id
+        db.query(studentSql, [first_name, last_name, email, phone_number,user_id], (err, result) => {
+            if (err) {
+                console.error("Error adding student:", err);
+                return res.status(500).json({ error: "Internal server error" });
+            }
+            return res.status(201).json({ message: "Student added successfully" });
+        });
+    });
+});
+
+// Delete a student by user_id using app.post()
+app.post('/students/delete', (req, res) => {
+    const userId = req.body.userId;
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+    }
+
+    // Delete student from student table
+    const deleteStudentSQL = "DELETE FROM student WHERE user_id = ?";
+    db.query(deleteStudentSQL, [userId], (err, studentResult) => {
+        if (err) {
+            console.error("Error deleting student:", err);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+        if (studentResult.affectedRows === 0) {
+            return res.status(404).json({ error: "Student not found" });
+        }
+        
+        // If student is deleted successfully from student table, delete corresponding user from user table
+        const deleteUserSQL = "DELETE FROM user WHERE user_id = ?";
+        db.query(deleteUserSQL, [userId], (err, userResult) => {
+            if (err) {
+                console.error("Error deleting user:", err);
+                return res.status(500).json({ error: "Internal server error" });
+            }
+            if (userResult.affectedRows === 0) {
+                // This should ideally not happen if the student is associated with a user, but handle it just in case
+                console.error("User associated with student not found");
+            }
+            // Both student and user are deleted successfully
+            return res.json({ message: "Student and associated user deleted successfully" });
+        });
+    });
+});
+
+// Update a student and corresponding user by user_id
+app.post('/students/edit/:userId', (req, res) => {
+    const userId = req.params.userId;
+    const updatedStudentData = req.body;
+
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+    }
+
+    // Update student data
+    const updateStudentSql = "UPDATE student SET first_name = ?, last_name = ?, email = ?, phone_number = ? WHERE user_id = ?";
+    db.query(updateStudentSql, [updatedStudentData.first_name, updatedStudentData.last_name, updatedStudentData.email, updatedStudentData.phone_number, userId], (err, studentResult) => {
+        if (err) {
+            console.error("Error updating student:", err);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+
+        if (studentResult.affectedRows === 0) {
+            return res.status(404).json({ error: "Student not found" });
+        }
+
+        // Update user data
+        const updateUserSql = "UPDATE user SET first_name = ?, last_name = ?, email = ? WHERE user_id = ?";
+        db.query(updateUserSql, [updatedStudentData.first_name, updatedStudentData.last_name, updatedStudentData.email, userId], (err, userResult) => {
+            if (err) {
+                console.error("Error updating user:", err);
+                return res.status(500).json({ error: "Internal server error" });
+            }
+
+            if (userResult.affectedRows === 0) {
+                return res.status(404).json({ error: "User not found" });
+            }
+
+            return res.json({ message: "Student and user updated successfully" });
+        });
+    });
+});
+
+
 app.get('/pricing', (req,res) => {
     const sql = "SELECT * FROM pricing";
     db.query(sql,(err, data) => {
@@ -167,7 +275,6 @@ app.get('/profile', verifyUser, (req, res) => {
     let sql;
     switch (userRole) {
         case 'admin':
-            console.log("going in admin")
             sql = "SELECT * FROM admin WHERE email = ?";
             break;
         case 'student':

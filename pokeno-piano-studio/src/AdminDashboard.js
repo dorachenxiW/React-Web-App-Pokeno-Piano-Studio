@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import Profile from "./Profile";
+import Students from "./Students";
 
 const AdminDashboard = ({ name, onLogout }) => {
     const { path } = useRouteMatch();
@@ -49,6 +50,7 @@ const AdminDashboard = ({ name, onLogout }) => {
         <div className="main-content">
           <Switch>
             <Route path={`${path}/profile`} component={Profile} />
+            <Route path={`${path}/students`} component={Students} />
           </Switch>
         </div>
       </div>
