@@ -108,7 +108,7 @@ app.post('/students/delete', (req, res) => {
 app.post('/students/edit/:userId', (req, res) => {
     const userId = req.params.userId;
     const updatedStudentData = req.body;
-
+    console.log(userId)
     if (!userId) {
         return res.status(400).json({ error: "User ID is required" });
     }
@@ -141,7 +141,6 @@ app.post('/students/edit/:userId', (req, res) => {
         });
     });
 });
-
 
 app.get('/pricing', (req,res) => {
     const sql = "SELECT * FROM pricing";
@@ -179,6 +178,8 @@ const verifyUser = (req, res, next) => {
         });
     }
 };
+
+
 
 app.get('/auth', verifyUser, (req, res) => {
     return res.json({
@@ -314,67 +315,111 @@ app.post('/profile', verifyUser, (req, res) => {
     });
 });
 
-// Route to handle changing password
-app.post('/change-password', verifyUser, (req, res) => {
-    const { oldPassword, newPassword } = req.body;
-    const userEmail = req.email; // Extract email from verified user
-    console.log(userEmail)
-
-    // Fetch user data from database (this step is redundant since user is already verified)
-    const sql = 'SELECT * FROM user WHERE email = ?';
-    db.query(sql, [userEmail], (err, results) => {
+app.get('/teachers', (req, res) => {
+    const sql = "SELECT * FROM teacher"; 
+    db.query(sql, (err, data) => {
         if (err) {
-            console.error('Error fetching user data:', err);
-            return res.status(500).json({ error: 'Internal server error' });
+            console.error("Error fetching teachers:", err);
+            return res.status(500).json({ error: "Internal server error" });
         }
+        return res.json(data);
+    });
+});
 
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'User not found' });
+app.post('/teachers', (req, res) => {
+    const { first_name, last_name, email, phone_number} = req.body;
+    const role = 'teacher'; // Assuming the role is hardcoded as 'student'
+    const password = '$2b$10$/UHz6nobtXuBOk1xpPeGout0M3XwsH2XfGA5I8jTyvxkRZTRZVU5i'; // You may want to generate a random password or use a default one
+    const userSql = "INSERT INTO user (first_name, last_name, email, role, password) VALUES (?, ?, ?, ?, ?)";
+    const teacherSql = "INSERT INTO teacher (first_name, last_name, email, phone_number,user_id) VALUES (?, ?, ?, ?, ?)";
+    db.query(userSql, [first_name, last_name, email, role, password], (err, result) => {
+        console.log(result)
+        if (err) {
+            console.error("Error adding user:", err);
+            return res.status(500).json({ error: "Internal server error" });
         }
-
-        const user = results[0];
-
-        // Hash the entered old password for comparison
-        bcrypt.hash(oldPassword,salt, (err, hashedOldPassword) => {
+        const user_id = result.insertId; // Get the auto-generated user_id
+        db.query(teacherSql, [first_name, last_name, email, phone_number,user_id], (err, result) => {
             if (err) {
-                console.error('Error hashing old password:', err);
-                return res.status(500).json({ error: 'Internal server error' });
+                console.error("Error adding teacher:", err);
+                return res.status(500).json({ error: "Internal server error" });
+            }
+            return res.status(201).json({ message: "Teacher added successfully" });
+        });
+    });
+});
+// Update a teacher and corresponding user by user_id
+app.post('/teachers/edit/:userId', (req, res) => {
+    const userId = req.params.userId;
+    const updatedTeacherData = req.body;
+    console.log(userId)
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+    }
+
+    // Update teacher data
+    const updateTeacherSql = "UPDATE teacher SET first_name = ?, last_name = ?, email = ?, phone_number = ? WHERE user_id = ?";
+    db.query(updateTeacherSql, [updatedTeacherData.first_name, updatedTeacherData.last_name, updatedTeacherData.email, updatedTeacherData.phone_number, userId], (err, teacherResult) => {
+        if (err) {
+            console.error("Error updating teacher:", err);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+
+        if (teacherResult.affectedRows === 0) {
+            return res.status(404).json({ error: "Teacher not found" });
+        }
+
+        // Update user data
+        const updateUserSql = "UPDATE user SET first_name = ?, last_name = ?, email = ? WHERE user_id = ?";
+        db.query(updateUserSql, [updatedTeacherData.first_name, updatedTeacherData.last_name, updatedTeacherData.email, userId], (err, userResult) => {
+            if (err) {
+                console.error("Error updating user:", err);
+                return res.status(500).json({ error: "Internal server error" });
             }
 
-            // Compare the hashed old password with the hashed password stored in the database
-            bcrypt.compare(oldPassword, user.password, (err, isMatch) => {
-                if (err) {
-                    console.error('Error comparing passwords:', err);
-                    return res.status(500).json({ error: 'Internal server error' });
-                }
-            
-                if (!isMatch) {
-                    return res.status(400).json({ error: 'Incorrect old password' });
-                }
-            
-                // Hash the new password
-                bcrypt.hash(newPassword, salt, (err, hash) => {
-                    if (err) {
-                        console.error('Error hashing new password:', err);
-                        return res.status(500).json({ error: 'Internal server error' });
-                    }
-                    console.log(newPassword)
-                    // Update user's password in the database
-                    const updateSql = 'UPDATE user SET password = ? WHERE email = ?';
-                    db.query(updateSql, [hash, userEmail], (err, result) => {
-                        if (err) {
-                            console.error('Error updating password:', err);
-                            return res.status(500).json({ error: 'Internal server error' });
-                        }
+            if (userResult.affectedRows === 0) {
+                return res.status(404).json({ error: "User not found" });
+            }
 
-                        return res.status(200).json({ message: 'Password updated successfully' });
-                    });  
-                });
-            });
+            return res.json({ message: "Teacher and user updated successfully" });
         });
     });
 });
 
+// Delete a teacher by user_id using app.post()
+app.post('/teachers/delete', (req, res) => {
+    const userId = req.body.userId;
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+    }
+
+    // Delete teacher from teacher table
+    const deleteTeacherSQL = "DELETE FROM teacher WHERE user_id = ?";
+    db.query(deleteTeacherSQL, [userId], (err, teacherResult) => {
+        if (err) {
+            console.error("Error deleting teacher:", err);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+        if (teacherResult.affectedRows === 0) {
+            return res.status(404).json({ error: "Teacher not found" });
+        }
+        
+        // If teacher is deleted successfully from teacher table, delete corresponding user from user table
+        const deleteUserSQL = "DELETE FROM user WHERE user_id = ?";
+        db.query(deleteUserSQL, [userId], (err, userResult) => {
+            if (err) {
+                console.error("Error deleting user:", err);
+                return res.status(500).json({ error: "Internal server error" });
+            }
+            if (userResult.affectedRows === 0) {
+                // This should ideally not happen if the teacher is associated with a user, but handle it just in case
+                console.error("User associated with teacher not found");
+            }
+            // Both teacher and user are deleted successfully
+            return res.json({ message: "Teacher and associated user deleted successfully" });
+        });
+    });
+});
 app.listen(5000, () => {
     console.log("listening");
 })

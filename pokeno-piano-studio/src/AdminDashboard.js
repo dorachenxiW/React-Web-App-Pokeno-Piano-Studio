@@ -2,6 +2,7 @@ import axios from "axios";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import Profile from "./Profile";
 import Students from "./Students";
+import Teachers from "./Teachers";
 
 const AdminDashboard = ({ name, onLogout }) => {
     const { path } = useRouteMatch();
@@ -26,17 +27,14 @@ const AdminDashboard = ({ name, onLogout }) => {
               <Link to={`${path}/calendar`} className="text-white">
                 Calendar
               </Link>
-              <Link
-                to={`${path}/teachers`}
-                className="text-white"
-              >
+              <Link to={`${path}/teachers`} className="text-white">
                 View and Manage Teachers
               </Link>
               <Link to={`${path}/students`} className="text-white">
-              View and Manage Students
+                View and Manage Students
               </Link>
               <Link to={`${path}/finanical_report`} className="text-white">
-              Financial Report 
+                Financial Report 
               </Link>
               <button
                 className="btn btn-danger mt-3 m-3"
@@ -51,6 +49,7 @@ const AdminDashboard = ({ name, onLogout }) => {
           <Switch>
             <Route path={`${path}/profile`} component={Profile} />
             <Route path={`${path}/students`} component={Students} />
+            <Route path={`${path}/teachers`} component={Teachers} />
           </Switch>
         </div>
       </div>
