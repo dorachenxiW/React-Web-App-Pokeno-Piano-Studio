@@ -3,6 +3,7 @@ import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import Profile from "./Profile";
 import Students from "./Students";
 import Teachers from "./Teachers";
+import AdminCalendar from "./AdminCalendar";
 
 const AdminDashboard = ({ name, onLogout }) => {
     const { path } = useRouteMatch();
@@ -50,6 +51,7 @@ const AdminDashboard = ({ name, onLogout }) => {
             <Route path={`${path}/profile`} component={Profile} />
             <Route path={`${path}/students`} component={Students} />
             <Route path={`${path}/teachers`} component={Teachers} />
+            <Route path={`${path}/calendar`} component={AdminCalendar} />
           </Switch>
         </div>
       </div>
