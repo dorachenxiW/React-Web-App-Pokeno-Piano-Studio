@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import TopNavbar from './TopNavbar';
 import MainNavbar from './MainNavbar';
 import Home from './Home'
@@ -9,26 +10,28 @@ import AboutUs from './AboutUs';
 import Pricing from './Pricing';
 import Contact from './Contact';
 import Lessons from './Lessons';
-import Authentication from './Authentication';
+//import Authentication from './Authentication';
 //import Profile from "./Profile";
 
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  //const [user_id, setUser_id] = useState(null);
+  const history = useHistory();
   // Function to handle login
   const handleLogin = () => {
     // Perform login logic here
     setIsLoggedIn(true);
+    //setUser_id(user_id);
   };
 
   // Function to handle logout
   const handleLogout = () => {
     // Perform logout logic here
     setIsLoggedIn(false);
+    history.push(`/login`)
   };
 
-  
   return (
     <Router>
       <div className="App">
@@ -44,7 +47,7 @@ function App() {
             <GetStarted />
           </Route>
           <Route path="/login">
-            <Login onLogin={handleLogin}/>
+          <Login onLogin={handleLogin} isLoggedIn={isLoggedIn} onLogout={handleLogout} />
           </Route>
           <Route path="/aboutus">
             <AboutUs />
@@ -58,11 +61,12 @@ function App() {
           <Route path="/contact">
             <Contact />
           </Route>
-          <Route path="/auth">
-            <Authentication onLogout={handleLogout}/>
-          </Route>
+          {/* <Route path="/auth">
+            {isLoggedIn && <Authentication onLogout={handleLogout}/>}
+          </Route>  */}
         </Switch>
       </div>
+      
     </Router>
   );
 }

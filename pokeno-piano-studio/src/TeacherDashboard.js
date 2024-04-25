@@ -2,8 +2,9 @@ import axios from "axios";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import Profile from "./Profile";
 import Students from "./Students";
+import TeacherCalendar from "./TeacherCalendar";
 
-const TeacherDashboard = ({ name, onLogout }) => {
+const TeacherDashboard = ({ user_id, name, onLogout }) => {
     const { path } = useRouteMatch();
 
     const handleDelete = () => {
@@ -19,20 +20,21 @@ const TeacherDashboard = ({ name, onLogout }) => {
         <div className="sidebar-header">
           <h3>Welcome to Teacher Dashboard!</h3>
           <h3> {name} </h3>
+          <h3> {user_id} </h3>
           <div className="sidebar-menu">
-            <Link to={`${path}/profile`} className="text-white">
+            <Link to={`${path}/${user_id}/profile`} className="text-white">
               Profile
             </Link>
-            <Link to={`${path}/calendar`} className="text-white">
+            <Link to={`${path}/${user_id}/calendar`} className="text-white">
               Calendar
             </Link>
             <Link
-              to={`${path}/record`}
+              to={`${path}/${user_id}/record`}
               className="text-white"
             >
               Record Learning Progress
             </Link>
-            <Link to={`${path}/students`} className="text-white">
+            <Link to={`${path}/${user_id}/students`} className="text-white">
               View and Manage Students
             </Link>
             <button
@@ -46,8 +48,14 @@ const TeacherDashboard = ({ name, onLogout }) => {
       </div>
       <div className="main-content">
         <Switch>
-          <Route path={`${path}/profile`} component={Profile} />
-          <Route path={`${path}/students`} component={Students} />
+          <Route path={`${path}/${user_id}/profile`} component={Profile} />
+          <Route
+              path={`${path}/${user_id}/calendar`}
+              render={(props) => (
+              <TeacherCalendar {...props} user_id={user_id} />
+              )}
+           />
+          <Route path={`${path}/${user_id}/students`} component={Students} />
         </Switch>
       </div>
     </div>
