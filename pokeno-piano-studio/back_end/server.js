@@ -420,6 +420,34 @@ app.post('/teachers/delete', (req, res) => {
         });
     });
 });
+
+// Endpoint to fetch booking data with student and teacher names
+app.get('/bookings', (req, res) => {
+    console.log("getting called")
+    const sql = `
+        SELECT 
+            booking.*, 
+            student.first_name AS student_first_name, 
+            student.last_name AS student_last_name, 
+            teacher.first_name AS teacher_first_name, 
+            teacher.last_name AS teacher_last_name
+        FROM 
+            booking 
+            INNER JOIN student ON booking.student_id = student.student_id
+            INNER JOIN teacher ON booking.teacher_id = teacher.teacher_id
+    `;
+    db.query(sql, (err, data) => {
+        console.log("goingin")
+        if (err) {
+            console.error("Error fetching bookings:", err);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+        console.log(data)
+        return res.json(data);
+        
+    });
+});
+
 app.listen(5000, () => {
     console.log("listening");
 })

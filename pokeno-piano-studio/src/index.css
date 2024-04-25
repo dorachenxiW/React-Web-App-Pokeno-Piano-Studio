@@ -405,3 +405,12 @@ body {
 .bio-row td {
   height: 100px; /* Adjust the height to control the height of the bio row */
 }
+
+
+.popoverStyle {
+  z-index: 99999;
+}
+
+a {
+  color: #212529;
+}
