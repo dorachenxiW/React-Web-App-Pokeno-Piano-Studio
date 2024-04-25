@@ -80,7 +80,6 @@ const AdminCalendar = () => {
                     const formattedEndTime = formatTime(event.extendedProps.endTime);
 
                     const popoverContent = `
-                        
                         <p><strong>Student:</strong> ${event.extendedProps.studentName}</p>
                         <p><strong>Teacher:</strong> ${event.extendedProps.teacherName}</p>
                         <p><strong>Start Time:</strong> ${formattedStartTime}</p>
