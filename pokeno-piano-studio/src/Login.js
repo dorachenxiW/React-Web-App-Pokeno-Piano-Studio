@@ -1,14 +1,15 @@
-import { Link } from 'react-router-dom';
+
+import Authentication from './Authentication';
+import { Link, useHistory } from 'react-router-dom';
 import axios from "axios";
-import { useHistory } from "react-router-dom";
 import { useState } from 'react';
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, isLoggedIn, onLogout }) => {
     const [values, setValues] = useState ({
         email: '',
         password: ''
     })
-    const history = useHistory()
+    const history = useHistory();
 
     axios.defaults.withCredentials = true;
 
@@ -17,8 +18,11 @@ const Login = ({ onLogin }) => {
         axios.post("http://localhost:5000/login", values)
         .then(res => {
             if (res.data.Status === "Success") {
-                onLogin(); // Update authentication status in App component
-                history.push('/auth'); // Redirect to the /auth route
+                //const user_id = res.data.user_id
+                onLogin(); 
+                //setRedirect(true);
+                history.push('/login/auth');
+                
             } else {
                 alert(res.data.Error);
             }
@@ -26,10 +30,12 @@ const Login = ({ onLogin }) => {
         .catch(err => console.error("Error logging in:", err));
     }
     
-
     return ( 
-        <div className="container">
-            <div className="row justify-content-center">
+        <div>
+            { isLoggedIn ? (
+                <Authentication onLogout={onLogout}/>
+            ) : (
+                <div className="row justify-content-center">
                 <div className="col-md-6">
                     <div className="card mt-5">
                         <div className="card-body">
@@ -57,6 +63,7 @@ const Login = ({ onLogin }) => {
                     </div>
                 </div>
             </div>
+            )}
         </div>
     );
 }

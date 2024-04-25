@@ -179,14 +179,13 @@ const verifyUser = (req, res, next) => {
     }
 };
 
-
-
 app.get('/auth', verifyUser, (req, res) => {
+    //console.log(user_id)
     return res.json({
          Status: "Success", 
          name: req.name,
          role: req.role, // Include the user's role in the response
-         user_id: req.user_id
+         user_id: req.user_id 
         });
 })
 
@@ -245,12 +244,14 @@ app.post('/login', (req, res) => {
                 if (err) return res.json({ Error: "Password compare error" });
                 if (response) {
                     const name = data[0].first_name + " " + data[0].last_name;
-                    const email = req.body.email; // Extract email from request
+                    const email = req.body.email; 
+                    const user_id =data[0].user_id;
                     // const role = data[0].role;
-                    // console.log(name)
+                    console.log(user_id)
                     const token = jwt.sign({ name, email}, "jwt-secret-key", { expiresIn: '1d' });
                     res.cookie('token', token, { sameSite: 'None', secure: true }); // Set SameSite attribute
-                    return res.json({ Status: "Success" });
+                    return res.json({ Status: "Success", user_id
+                 });
                 } else {
                     return res.json({ Error: "Password not matched" });
                 }
@@ -392,7 +393,6 @@ app.post('/teachers/delete', (req, res) => {
     if (!userId) {
         return res.status(400).json({ error: "User ID is required" });
     }
-
     // Delete teacher from teacher table
     const deleteTeacherSQL = "DELETE FROM teacher WHERE user_id = ?";
     db.query(deleteTeacherSQL, [userId], (err, teacherResult) => {
@@ -423,8 +423,8 @@ app.post('/teachers/delete', (req, res) => {
 
 // Endpoint to fetch booking data with student and teacher names
 app.get('/bookings', (req, res) => {
-    console.log("getting called")
-    const sql = `
+    console.log("getting called");
+    let sql = `
         SELECT 
             booking.*, 
             student.first_name AS student_first_name, 
@@ -436,18 +436,38 @@ app.get('/bookings', (req, res) => {
             INNER JOIN student ON booking.student_id = student.student_id
             INNER JOIN teacher ON booking.teacher_id = teacher.teacher_id
     `;
-    db.query(sql, (err, data) => {
-        console.log("goingin")
+    const { teacher_id } = req.query;
+    if (teacher_id) {
+        sql += ` WHERE booking.teacher_id = ?`;
+    }
+
+    db.query(sql, [teacher_id], (err, data) => {
+        console.log("goingin");
         if (err) {
             console.error("Error fetching bookings:", err);
             return res.status(500).json({ error: "Internal server error" });
         }
-        console.log(data)
+        console.log(data);
         return res.json(data);
-        
     });
 });
 
+// Endpoint to fetch teacher ID based on user ID
+app.get('/teacher/:user_id', (req, res) => {
+    const { user_id } = req.params;
+    // Assuming you have a query to fetch the teacher ID associated with the given user ID from your database
+    // Replace `YOUR_QUERY_TO_FETCH_TEACHER_ID` with the actual query to fetch teacher ID from the database
+    db.query('SELECT teacher_id From teacher WHERE user_id =?', [user_id], (error, results) => {
+        if (error) {
+            console.error('Error fetching teacher ID:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        } else {
+            // Assuming your query returns a single row with the teacher ID
+            const teacher_id = results[0].teacher_id;
+            res.json({ teacher_id });
+        }
+    });
+});
 app.listen(5000, () => {
     console.log("listening");
 })
