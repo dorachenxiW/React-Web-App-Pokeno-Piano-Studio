@@ -1,0 +1,96 @@
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+//import { useState, useEffect } from 'react';
+//import axios from 'axios';
+import * as bootstrap from "bootstrap";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+
+
+const AdminCalendar = () => {
+    const events = [
+        {
+            title: "the title",
+            start:"2024-04-05T08:00:00",
+            end:"2024-04-05T09:00:00"
+        },
+    ];
+    /* const [bookings, setBookings] = useState([]);
+
+    useEffect(() => {
+        axios.get('http://localhost:5000/bookings')
+            .then(response => {
+                setBookings(response.data);
+                console.log(response.data); // Log the fetched data
+            })
+            .catch(error => {
+                console.error('Error fetching booking data:', error);
+            });
+    }, []);
+
+    // Function to convert booking data into FullCalendar events
+    const getEvents = () => {
+        return bookings.map(booking => ({
+            title: 'Booking',
+            start: booking.start_time,
+            end: booking.end_time,
+            allDay: false,
+            extendedProps: {
+                bookingId: booking.booking_id,
+                studentName: `${booking.student_first_name} ${booking.student_last_name}`,
+                teacherName: `${booking.teacher_first_name} ${booking.teacher_last_name}`,
+                lessonType: booking.lesson_type
+            }
+        }));
+    };
+
+    // Function to handle event click (for popover)
+    const handleEventClick = (info) => {
+        const popoverContent = `
+            Booking ID: ${info.event.extendedProps.bookingId}
+            Student Name: ${info.event.extendedProps.studentName}
+            Teacher Name: ${info.event.extendedProps.teacherName}
+            Lesson Type: ${info.event.extendedProps.lessonType}
+        `;
+        // Display popover
+        alert(popoverContent); // Replace with your popover implementation
+    }; */
+
+    return (
+        <div>
+            <FullCalendar
+                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                initialView="dayGridMonth"
+                headerToolbar={{
+                    start: 'today,prev,next',
+                    center: 'title',
+                    end: 'dayGridMonth,timeGridWeek,timeGridDay'
+                }}
+                buttonText={{
+                    prev: '<',
+                    next: '>'
+                }}
+                events={events}
+                eventDidMount={(info)=>{
+                    return new bootstrap.Popover(info.el,{
+                        title: info.event.title,
+                        placement:"auto",
+                        trigger:"hover",
+                        customClass:"popoverStyle",
+                        content:
+                        "<p>Please subscribe<strong>Bootstrap popover</strong>.</p>",
+
+                        html:true,
+                    });
+                }}
+                
+                //eventClick={handleEventClick}
+                //timezone="UTC" // Set the desired timezone here
+            />
+        </div>
+    );
+};
+
+export default AdminCalendar;

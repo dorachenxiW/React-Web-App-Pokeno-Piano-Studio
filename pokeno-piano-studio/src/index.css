@@ -407,3 +407,10 @@ body {
 }
 
 
+.popoverStyle {
+  z-index: 99999;
+}
+
+a {
+  color: #212529;
+}
