@@ -49,9 +49,9 @@ const Authentication = ({ onLogout }) => {
         <div className="content">
             {auth ? (
                 <div>
-                    {role === 'student' && <StudentDashboard name={name} onLogout={handleLogout}/>}
+                    {role === 'student' && <StudentDashboard name={name} user_id={user_id} onLogout={handleLogout}/>}
                     {role === 'teacher' && <TeacherDashboard name={name} user_id={user_id} onLogout={handleLogout}/>}
-                    {role === 'admin' && <AdminDashboard name={name} onLogout={handleLogout}/>}
+                    {role === 'admin' && <AdminDashboard name={name} user_id={user_id} onLogout={handleLogout}/>}
                 </div>
             ) : (
                 <div className="top-links">

@@ -1,8 +1,10 @@
 import axios from "axios";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import Profile from "./Profile";
+import Calendar from "./Calendar";
 
-const StudentDashboard = ({ name, onLogout }) => {
+
+const StudentDashboard = ({ user_id, name, onLogout }) => {
   const { path } = useRouteMatch();
 
   const handleDelete = () => {
@@ -23,19 +25,19 @@ const StudentDashboard = ({ name, onLogout }) => {
           <h3>Welcome to Student Dashboard!</h3>
           <h3> {name} </h3>
           <div className="sidebar-menu">
-            <Link to={`${path}/profile`} className="text-white">
+            <Link to={`${path}/${user_id}/profile`} className="text-white">
               Profile
             </Link>
-            <Link to={`${path}/calendar`} className="text-white">
-              Calendar
+            <Link to={`${path}/${user_id}/calendar`} className="text-white">
+              Book a time slot
             </Link>
             <Link
-              to={`${path}/learning-progress`}
+              to={`${path}/${user_id}/learning-progress`}
               className="text-white"
             >
               Learning Progress
             </Link>
-            <Link to={`${path}/payment`} className="text-white">
+            <Link to={`${path}/${user_id}/payment`} className="text-white">
               Payment
             </Link>
             <button
@@ -50,7 +52,13 @@ const StudentDashboard = ({ name, onLogout }) => {
       <div className="main-content">
         {/* <h3>Welcome to Student Dashboard!</h3> */}
         <Switch>
-          <Route path={`${path}/profile`} component={Profile} />
+          <Route path={`${path}/${user_id}/profile`} component={Profile} />
+          <Route
+              path={`${path}/${user_id}/calendar`}
+              render={(props) => (
+              <Calendar {...props} user_id={user_id} />
+              )}
+           />
         </Switch>
       </div>
     </div>

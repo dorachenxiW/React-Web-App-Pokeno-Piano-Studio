@@ -8,7 +8,7 @@ import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 
-const AdminCalendar = () => {
+const Calendar = () => {
     const [events, setEvents] = useState ([]);
 
     useEffect (() => {
@@ -100,4 +100,4 @@ const AdminCalendar = () => {
     );
 };
 
-export default AdminCalendar;
+export default Calendar;
