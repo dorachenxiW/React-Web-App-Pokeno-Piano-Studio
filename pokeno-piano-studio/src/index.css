@@ -16,11 +16,11 @@ body {
 
 /* top-navbar*/
 .top-navbar {
+  width: 100%; /* Extend across the entire width of the screen */
   padding: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1500px;
   margin: auto;
   background-color: black;
 }
@@ -52,9 +52,9 @@ body {
 
 /* main-navbar*/
 .main-navbar {
+  width: 100%;
   padding: 15px;
   display: flex;
-  max-width: 1500px;
   background-color: #F4C2C2;
   margin-bottom: 0 auto;
 }
