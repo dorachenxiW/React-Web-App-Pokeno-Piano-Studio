@@ -287,29 +287,32 @@ body {
   display: flex;
   justify-content: space-between; /* Arrange items with space between */
   padding: 20px;
+
 }
 
 .contact-details {
   flex: 1; /* Take up remaining space */
-  padding:20px; /* Add some spacing between the details and image */
+  padding:10px; /* Add some spacing between the details and image */
   text-align: left; /* Align text to the left */
 }
 
 .contact-details h2 {
     font-size: 35px; /* Adjust the font size as needed */
-    padding: 20px 20px 50px; /* Adjust the padding as needed */
+    padding: 10px 20px 50px; /* Adjust the padding as needed */
     text-align: center;
 }
   
 .contact-details p {
    font-size: 18px;
-   padding-left: 130px;
+   padding-left: 80px;
+   padding-right: 100px;
    padding-bottom: 30px;
    line-height: 1.5;
  }  
 
 .contact-form {
   flex: 1;
+  padding-top: 50px;
 }
 
 .contact-form form {
