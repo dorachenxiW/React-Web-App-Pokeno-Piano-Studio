@@ -3,17 +3,22 @@ import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import Profile from "./Profile";
 import Students from "./Students";
 import TeacherCalendar from "./TeacherCalendar";
+import { useHistory } from 'react-router-dom';
+
 
 const TeacherDashboard = ({ user_id, name, onLogout }) => {
     const { path } = useRouteMatch();
 
+    const history = useHistory();
+
     const handleDelete = () => {
-        axios.get('http://localhost:5000/logout')
-        .then(res => {
-            window.location.reload(true); // Use window.location.reload to reload the page
-            onLogout();
-        }).catch(err => console.log(err));
+      axios.get('http://localhost:5000/logout')
+      .then(res => {
+          onLogout(); // Call the onLogout function to handle logout state
+          history.push('/login'); // Redirect to the login page
+      }).catch(err => console.log(err));
     }
+  
     return (
         <div className="dashboard-container">
       <div className="sidebar">
