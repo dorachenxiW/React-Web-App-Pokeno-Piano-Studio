@@ -421,7 +421,6 @@ app.post('/teachers/delete', (req, res) => {
     });
 });
 
-// Endpoint to fetch booking data with student and teacher names
 app.get('/bookings', (req, res) => {
     console.log("getting called");
     let sql = `
@@ -436,21 +435,36 @@ app.get('/bookings', (req, res) => {
             INNER JOIN student ON booking.student_id = student.student_id
             INNER JOIN teacher ON booking.teacher_id = teacher.teacher_id
     `;
-    const { teacher_id } = req.query;
+    const { teacher_id, student_id } = req.query;
+
     if (teacher_id) {
         sql += ` WHERE booking.teacher_id = ?`;
+        db.query(sql, [teacher_id], (err, data) => {
+            console.log("goingin");
+            if (err) {
+                console.error("Error fetching bookings:", err);
+                return res.status(500).json({ error: "Internal server error" });
+            }
+            console.log(data);
+            return res.json(data);
+        });
+    } else if (student_id) {
+        sql += ` WHERE booking.student_id = ?`;
+        db.query(sql, [student_id], (err, data) => {
+            console.log("goingin");
+            if (err) {
+                console.error("Error fetching bookings:", err);
+                return res.status(500).json({ error: "Internal server error" });
+            }
+            console.log(data);
+            return res.json(data);
+        });
+    } else {
+        // If neither teacher_id nor student_id is provided, return an error
+        return res.status(400).json({ error: "Please provide either teacher_id or student_id" });
     }
-
-    db.query(sql, [teacher_id], (err, data) => {
-        console.log("goingin");
-        if (err) {
-            console.error("Error fetching bookings:", err);
-            return res.status(500).json({ error: "Internal server error" });
-        }
-        console.log(data);
-        return res.json(data);
-    });
 });
+
 
 // Endpoint to fetch teacher ID based on user ID
 app.get('/teacher/:user_id', (req, res) => {
@@ -465,6 +479,23 @@ app.get('/teacher/:user_id', (req, res) => {
             // Assuming your query returns a single row with the teacher ID
             const teacher_id = results[0].teacher_id;
             res.json({ teacher_id });
+        }
+    });
+});
+
+// Endpoint to fetch student ID based on user ID
+app.get('/student/:user_id', (req, res) => {
+    const { user_id } = req.params;
+    // Assuming you have a query to fetch the student ID associated with the given user ID from your database
+    
+    db.query('SELECT student_id From student WHERE user_id =?', [user_id], (error, results) => {
+        if (error) {
+            console.error('Error fetching student ID:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        } else {
+            // Assuming your query returns a single row with the teacher ID
+            const student_id = results[0].student_id;
+            res.json({ student_id });
         }
     });
 });

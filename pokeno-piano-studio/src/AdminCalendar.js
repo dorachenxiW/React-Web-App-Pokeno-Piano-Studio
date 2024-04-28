@@ -2,41 +2,28 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import * as bootstrap from "bootstrap";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import * as bootstrap from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 
-const TeacherCalendar = ({ user_id }) => {
-    const [events, setEvents] = useState([]);
-    //console.log(user_id)
+const AdminCalendar = () => {
+    const [events, setEvents] = useState ([]);
 
-    useEffect(() => {
-        if (user_id) {
-            // Fetch the teacher ID based on the user_id
-            axios.get(`http://localhost:5000/teacher/${user_id}`)
-            .then(response => {
-                const teacher_id = response.data.teacher_id;
-                //console.log(teacher_id)
-                // Fetch bookings for the specific teacher ID
-                axios.get(`http://localhost:5000/bookings?teacher_id=${teacher_id}`)
-                .then(response => {
-                    setEvents(response.data);
-                })
-                .catch(error => {
-                    console.error('Error fetching events', error);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching teacher ID', error);
-            });
-        }
-    }, [user_id]);
+    useEffect (() => {
+        axios.get('http://localhost:5000/bookings')
+        .then(response => {
+            setEvents(response.data);
+        })
+        .catch(error => {
+            console.error ('Error fetching events' , error);
+        });
+    },[]);
 
     const getEvents = (events) => {
         return events.map(event => ({
-            title: `${event.student_first_name} ${event.student_last_name} ${event.lesson_type} lesson`,
+            title: `${event.teacher_first_name} ${event.teacher_last_name}`,
             start: event.booking_date.slice(0, 10) + 'T' + event.start_time,
             end: event.booking_date.slice(0, 10) + 'T' + event.end_time,
             allDay: false,
@@ -71,7 +58,6 @@ const TeacherCalendar = ({ user_id }) => {
         return `${formattedTime}:${minutes}${ampm}`;
     };
     
-
     return (
         <div>
             <FullCalendar
@@ -114,4 +100,4 @@ const TeacherCalendar = ({ user_id }) => {
     );
 };
 
-export default TeacherCalendar;
+export default AdminCalendar;
