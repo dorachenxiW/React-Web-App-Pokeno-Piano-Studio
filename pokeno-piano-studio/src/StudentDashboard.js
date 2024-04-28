@@ -1,19 +1,21 @@
 import axios from "axios";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import Profile from "./Profile";
-import Calendar from "./Calendar";
+import StudentCalendar from "./StudentCalendar";
+import { useHistory } from 'react-router-dom';
 
 
 const StudentDashboard = ({ user_id, name, onLogout }) => {
   const { path } = useRouteMatch();
 
+  const history = useHistory();
+
   const handleDelete = () => {
     axios
       .get("http://localhost:5000/logout")
       .then((res) => {
-        window.location.reload(true); // Use window.location.reload to reload the page
         onLogout();
-        //history.push('/login'); // Redirect to the login page upon logout
+        history.push('/login'); // Redirect to the login page upon logout
       })
       .catch((err) => console.log(err));
   };
@@ -29,7 +31,10 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
               Profile
             </Link>
             <Link to={`${path}/${user_id}/calendar`} className="text-white">
-              Book a time slot
+              My Lesson Schedule
+            </Link>
+            <Link to={`${path}/${user_id}/book`} className="text-white">
+              Book a Time Slot
             </Link>
             <Link
               to={`${path}/${user_id}/learning-progress`}
@@ -56,7 +61,7 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
           <Route
               path={`${path}/${user_id}/calendar`}
               render={(props) => (
-              <Calendar {...props} user_id={user_id} />
+              <StudentCalendar {...props} user_id={user_id} />
               )}
            />
         </Switch>

@@ -3,16 +3,19 @@ import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import Profile from "./Profile";
 import Students from "./Students";
 import Teachers from "./Teachers";
-import Calendar from "./Calendar";
+import { useHistory } from 'react-router-dom';
+import AdminCalendar from "./AdminCalendar";
 
-const AdminDashboard = ({ name, onLogout }) => {
+const AdminDashboard = ({ user_id, name, onLogout }) => {
     const { path } = useRouteMatch();
+
+    const history = useHistory();
 
     const handleDelete = () => {
         axios.get('http://localhost:5000/logout')
         .then(res => {
-            window.location.reload(true); // Use window.location.reload to reload the page
             onLogout();
+            history.push('/login');
         }).catch(err => console.log(err));
     }
     return (
@@ -22,19 +25,19 @@ const AdminDashboard = ({ name, onLogout }) => {
             <h3>Welcome to Admin Dashboard!</h3>
             <h3> {name} </h3>
             <div className="sidebar-menu">
-              <Link to={`${path}/profile`} className="text-white">
+              <Link to={`${path}/${user_id}/profile`} className="text-white">
                 Profile
               </Link>
-              <Link to={`${path}/calendar`} className="text-white">
+              <Link to={`${path}/${user_id}/calendar`} className="text-white">
                 Calendar
               </Link>
-              <Link to={`${path}/teachers`} className="text-white">
+              <Link to={`${path}/${user_id}/teachers`} className="text-white">
                 View and Manage Teachers
               </Link>
-              <Link to={`${path}/students`} className="text-white">
+              <Link to={`${path}/${user_id}/students`} className="text-white">
                 View and Manage Students
               </Link>
-              <Link to={`${path}/finanical_report`} className="text-white">
+              <Link to={`${path}/${user_id}/finanical_report`} className="text-white">
                 Financial Report 
               </Link>
               <button
@@ -48,10 +51,10 @@ const AdminDashboard = ({ name, onLogout }) => {
         </div>
         <div className="main-content">
           <Switch>
-            <Route path={`${path}/profile`} component={Profile} />
-            <Route path={`${path}/students`} component={Students} />
-            <Route path={`${path}/teachers`} component={Teachers} />
-            <Route path={`${path}/calendar`} component={Calendar} />
+            <Route path={`${path}/${user_id}/profile`} component={Profile} />
+            <Route path={`${path}/${user_id}/students`} component={Students} />
+            <Route path={`${path}/${user_id}/teachers`} component={Teachers} />
+            <Route path={`${path}/${user_id}/calendar`} component={AdminCalendar} />
           </Switch>
         </div>
       </div>

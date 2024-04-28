@@ -2,24 +2,36 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import * as bootstrap from "bootstrap";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import * as bootstrap from "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+const StudentCalendar = ({ user_id}) => {
+    const [events, setEvents] = useState([]);
 
-const Calendar = () => {
-    const [events, setEvents] = useState ([]);
+    useEffect(() => {
+        if (user_id) {
+            // Fetch the teacher ID based on the user_id
+            axios.get(`http://localhost:5000/student/${user_id}`)
+            .then(response => {
+                const student_id = response.data.student_id;
+                //console.log(student_id)
+                // Fetch bookings for the specific student ID
+                axios.get(`http://localhost:5000/bookings?student_id=${student_id}`)
+                .then(response => {
+                    setEvents(response.data);
+                })
+                .catch(error => {
+                    console.error('Error fetching events', error);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching student ID', error);
+            });
+        }
+    }, [user_id]);
 
-    useEffect (() => {
-        axios.get('http://localhost:5000/bookings')
-        .then(response => {
-            setEvents(response.data);
-        })
-        .catch(error => {
-            console.error ('Error fetching events' , error);
-        });
-    },[]);
 
     const getEvents = (events) => {
         return events.map(event => ({
@@ -36,6 +48,7 @@ const Calendar = () => {
             }
         }));
     }
+
     const formatTime = (time) => {
         const [hours, minutes] = time.split(':');
         let formattedTime;
@@ -57,8 +70,8 @@ const Calendar = () => {
         
         return `${formattedTime}:${minutes}${ampm}`;
     };
-    
-    return (
+    return (  
+        
         <div>
             <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -98,6 +111,6 @@ const Calendar = () => {
             />
         </div>
     );
-};
-
-export default Calendar;
+}
+ 
+export default StudentCalendar;

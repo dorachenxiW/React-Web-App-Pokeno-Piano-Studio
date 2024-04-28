@@ -25,7 +25,6 @@ const TeacherDashboard = ({ user_id, name, onLogout }) => {
         <div className="sidebar-header">
           <h3>Welcome to Teacher Dashboard!</h3>
           <h3> {name} </h3>
-          <h3> {user_id} </h3>
           <div className="sidebar-menu">
             <Link to={`${path}/${user_id}/profile`} className="text-white">
               Profile
