@@ -499,6 +499,19 @@ app.get('/student/:user_id', (req, res) => {
         }
     });
 });
+
+// GET request to fetch teacher availability
+app.get('/teacher_availability', (req, res) => {
+    const query = 'SELECT * FROM teacher_availability';
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching teacher availability:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        res.json(results);
+    });
+});
+
 app.listen(5000, () => {
     console.log("listening");
 })
