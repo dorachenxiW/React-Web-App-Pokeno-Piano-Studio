@@ -78,7 +78,7 @@ const TeacherCalendar = ({ user_id }) => {
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
                 headerToolbar={{
-                    start: 'today,prev,next',
+                    left: 'prev,next today',
                     center: 'title',
                     end: 'dayGridMonth,timeGridWeek,timeGridDay'
                 }}

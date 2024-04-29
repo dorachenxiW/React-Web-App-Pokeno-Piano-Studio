@@ -64,7 +64,14 @@ const TeacherDashboard = ({ user_id, name, onLogout }) => {
               )}
            />
           <Route path={`${path}/${user_id}/students`} component={Students} />
-          <Route path={`${path}/${user_id}/availability`} component={Availability} />
+          <Route
+              path={`${path}/:user_id/availability`}
+              render={(props) => (
+              <Availability {...props} user_id={user_id} />
+              )}
+          />
+        
+
         </Switch>
       </div>
     </div>
