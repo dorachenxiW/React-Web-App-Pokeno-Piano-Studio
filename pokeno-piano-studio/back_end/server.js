@@ -526,6 +526,52 @@ app.get('/teacher_availability/:user_id', (req, res) => {
     });
 });
 
+app.post('/delete_availability/:eventId', (req, res) => {
+    const eventId = req.params.eventId;
+
+    // SQL query to delete the event from the database
+    const deleteEventSQL = "DELETE FROM teacher_availability WHERE id = ?";
+    db.query(deleteEventSQL, [eventId], (error, result) => {
+        if (error) {
+            console.error("Error deleting event:", error);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Event not found" });
+        }
+        // Event deleted successfully
+        return res.json({ message: "Event deleted successfully" });
+    });
+});
+
+// Endpoint to add availability
+app.post('/add_availability', (req, res) => {
+    const { teacher_id, dayOfWeek, startTime, duration } = req.body;
+
+    const addAvailabilitySQL = "INSERT INTO teacher_availability (teacher_id, day_of_week, start_time, end_time, duration) VALUES (?, ?, ?, ?, ?)";
+
+    // Parse the start time and calculate end time based on duration
+    const [startHour, startMinute] = startTime.split(':').map(Number);
+    const startDateTime = new Date();
+    startDateTime.setHours(startHour, startMinute, 0, 0);
+    
+    const endDateTime = new Date(startDateTime.getTime() + duration * 60000); // Convert duration to milliseconds
+
+    // Execute the SQL query to add availability
+    db.query(addAvailabilitySQL, [teacher_id, dayOfWeek, startDateTime, endDateTime, duration], (error, result) => {
+        if (error) {
+            console.error("Error adding availability:", error);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+        
+        // Check if the availability was added successfully
+        if (result.affectedRows === 1) {
+            return res.status(201).json({ message: "Availability added successfully" });
+        } else {
+            return res.status(500).json({ error: "Failed to add availability" });
+        }
+    });
+});
 
 app.listen(5000, () => {
     console.log("listening");

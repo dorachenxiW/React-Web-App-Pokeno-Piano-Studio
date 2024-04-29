@@ -70,6 +70,7 @@ const TeacherDashboard = ({ user_id, name, onLogout }) => {
               <Availability {...props} user_id={user_id} />
               )}
           />
+        
 
         </Switch>
       </div>
