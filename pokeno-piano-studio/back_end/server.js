@@ -500,17 +500,32 @@ app.get('/student/:user_id', (req, res) => {
     });
 });
 
-// GET request to fetch teacher availability
-app.get('/teacher_availability', (req, res) => {
-    const query = 'SELECT * FROM teacher_availability';
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Error fetching teacher availability:', err);
-            return res.status(500).json({ error: 'Internal server error' });
+// Endpoint to fetch teacher availability based on user ID
+app.get('/teacher_availability/:user_id', (req, res) => {
+    const { user_id } = req.params;
+
+    // Fetch teacher ID based on user ID
+    db.query('SELECT teacher_id FROM teacher WHERE user_id = ?', [user_id], (error, results) => {
+        if (error) {
+            console.error('Error fetching teacher ID:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        } else {
+            // Assuming the query returns a single row with the teacher ID
+            const teacher_id = results[0].teacher_id;
+
+            // Fetch teacher availability based on teacher ID
+            db.query('SELECT * FROM teacher_availability WHERE teacher_id = ?', [teacher_id], (error, results) => {
+                if (error) {
+                    console.error('Error fetching teacher availability:', error);
+                    res.status(500).json({ error: 'Internal server error' });
+                } else {
+                    res.json(results); // Return the teacher availability
+                }
+            });
         }
-        res.json(results);
     });
 });
+
 
 app.listen(5000, () => {
     console.log("listening");

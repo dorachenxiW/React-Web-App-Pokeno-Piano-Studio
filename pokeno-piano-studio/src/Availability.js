@@ -1,54 +1,73 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import moment from 'moment';
 
-const Availability = () => {
-    const [teacherAvailability, setTeacherAvailability] = useState([]);
+const AvailabilityCalendar = ({ user_id }) => {
+    const [events, setEvents] = useState([]);
 
-    useEffect(() => {
-        fetchTeacherAvailability();
-    }, []);
-
-    const fetchTeacherAvailability = () => {
-        axios.get('http://localhost:5000/teacher_availability')
+    const fetchTeacherAvailability = useCallback(() => {
+        axios.get(`http://localhost:5000/teacher_availability/${user_id}`)
             .then(response => {
-                setTeacherAvailability(response.data);
+                const availability = response.data;
+                const weekStart = moment().startOf('week');
+                const weekEnd = moment().endOf('week');
+                const generatedEvents = [];
+
+                // Loop through each day of the week
+                for (let day = weekStart; day <= weekEnd; day = day.clone().add(1, 'day')) {
+                    const dayOfWeek = day.format('dddd'); // Get the day of the week (e.g., Monday)
+                    const dayAvailability = availability.filter(slot => slot.day_of_week === dayOfWeek);
+
+                    // If teacher is available on this day, add events for the available time slots
+                    if (dayAvailability.length > 0) {
+                        dayAvailability.forEach(slot => {
+                            const startTime = moment(slot.start_time, 'HH:mm:ss');
+                            const endTime = moment(slot.end_time, 'HH:mm:ss');
+                            const event = {
+                                title: slot.is_booked ? 'Booked' : 'Available',
+                                start: day.clone().set({ 'hour': startTime.hours(), 'minute': startTime.minutes() }).toDate(),
+                                end: day.clone().set({ 'hour': endTime.hours(), 'minute': endTime.minutes() }).toDate(),
+                                backgroundColor: slot.is_booked ? 'red' : 'green',
+                                textColor: 'white', // Change text color to white for better contrast
+                            };
+
+                            generatedEvents.push(event);
+                        });
+                    }
+                }
+
+                setEvents(generatedEvents);
             })
             .catch(error => {
                 console.error('Error fetching teacher availability:', error);
             });
-    };
+    }, [user_id]);
 
-    const handleAddTimeSlot = () => {
-        // Logic to add a new time slot
-        // This can be implemented based on your specific requirements
-    };
+    useEffect(() => {
+        fetchTeacherAvailability();
+    }, [fetchTeacherAvailability]);
 
-    return ( 
-        <div>
-            <h2>My Availability</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Day</th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
-                        <th>Duration</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {teacherAvailability.map(slot => (
-                        <tr key={slot.id}>
-                            <td>{slot.day_of_week}</td>
-                            <td>{slot.start_time}</td>
-                            <td>{slot.end_time}</td>
-                            <td>{slot.duration} minutes</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            <button onClick={handleAddTimeSlot}>Add More Time Slot</button>
+    return (
+        <div style={{ height: '600px' }}>
+            <FullCalendar
+                plugins={[dayGridPlugin, timeGridPlugin]}
+                initialView="timeGridWeek"
+                buttonText={{
+                    prev: '<',
+                    next: '>'
+                }}
+                events={events}
+                slotDuration="00:30:00"
+                slotMinTime="08:00:00"
+                slotMaxTime="21:00:00"
+                allDaySlot={false}
+                height={"95vh"}
+            />
         </div>
-     );
-}
- 
-export default Availability;
+    );
+};
+
+export default AvailabilityCalendar;
