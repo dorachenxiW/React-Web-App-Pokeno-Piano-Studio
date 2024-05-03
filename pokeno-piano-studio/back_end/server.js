@@ -334,7 +334,7 @@ app.post('/teachers', (req, res) => {
     const userSql = "INSERT INTO user (first_name, last_name, email, role, password) VALUES (?, ?, ?, ?, ?)";
     const teacherSql = "INSERT INTO teacher (first_name, last_name, email, phone_number,user_id) VALUES (?, ?, ?, ?, ?)";
     db.query(userSql, [first_name, last_name, email, role, password], (err, result) => {
-        console.log(result)
+        //console.log(result)
         if (err) {
             console.error("Error adding user:", err);
             return res.status(500).json({ error: "Internal server error" });
@@ -353,7 +353,7 @@ app.post('/teachers', (req, res) => {
 app.post('/teachers/edit/:userId', (req, res) => {
     const userId = req.params.userId;
     const updatedTeacherData = req.body;
-    console.log(userId)
+    //console.log(userId)
     if (!userId) {
         return res.status(400).json({ error: "User ID is required" });
     }
@@ -440,23 +440,23 @@ app.get('/bookings', (req, res) => {
     if (teacher_id) {
         sql += ` WHERE booking.teacher_id = ?`;
         db.query(sql, [teacher_id], (err, data) => {
-            console.log("goingin");
+            //console.log("goingin");
             if (err) {
                 console.error("Error fetching bookings:", err);
                 return res.status(500).json({ error: "Internal server error" });
             }
-            console.log(data);
+            //console.log(data);
             return res.json(data);
         });
     } else if (student_id) {
         sql += ` WHERE booking.student_id = ?`;
         db.query(sql, [student_id], (err, data) => {
-            console.log("goingin");
+            //console.log("goingin");
             if (err) {
                 console.error("Error fetching bookings:", err);
                 return res.status(500).json({ error: "Internal server error" });
             }
-            console.log(data);
+            //console.log(data);
             return res.json(data);
         });
     } else {
