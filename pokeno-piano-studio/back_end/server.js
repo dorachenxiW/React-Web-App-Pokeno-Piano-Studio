@@ -526,6 +526,19 @@ app.get('/teacher_availability/:user_id', (req, res) => {
     });
 });
 
+app.get('/teacher_availability', (req, res) => {
+    const { teacher_id } = req.query;
+    db.query('SELECT * FROM teacher_availability WHERE teacher_id = ?', [teacher_id], (error, results) => {
+        if (error) {
+            console.error('Error fetching teacher availability:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        } else {
+            res.json(results); // Return the teacher availability
+        }
+    });
+});
+
+
 app.post('/delete_availability/:eventId', (req, res) => {
     const eventId = req.params.eventId;
 

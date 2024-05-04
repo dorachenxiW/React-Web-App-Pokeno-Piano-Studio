@@ -2,6 +2,7 @@ import axios from "axios";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import Profile from "./Profile";
 import StudentCalendar from "./StudentCalendar";
+import BookATimeSlot from "./BookATimeSlot";
 import { useHistory } from 'react-router-dom';
 
 
@@ -36,10 +37,7 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
             <Link to={`${path}/${user_id}/book`} className="text-white">
               Book a Time Slot
             </Link>
-            <Link
-              to={`${path}/${user_id}/learning-progress`}
-              className="text-white"
-            >
+            <Link to={`${path}/${user_id}/learning-progress`} className="text-white">
               Learning Progress
             </Link>
             <Link to={`${path}/${user_id}/payment`} className="text-white">
@@ -62,6 +60,12 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
               path={`${path}/${user_id}/calendar`}
               render={(props) => (
               <StudentCalendar {...props} user_id={user_id} />
+              )}
+           />
+           <Route
+              path={`${path}/${user_id}/book`}
+              render={(props) => (
+              <BookATimeSlot {...props} user_id={user_id} />
               )}
            />
         </Switch>
