@@ -29,7 +29,7 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
           <h3> {name} </h3>
           <div className="sidebar-menu">
             <Link to={`${path}/${user_id}/profile`} className="text-white">
-              Profile
+              My Profile
             </Link>
             <Link to={`${path}/${user_id}/calendar`} className="text-white">
               My Lesson Schedule
@@ -38,15 +38,12 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
               Book a Time Slot
             </Link>
             <Link to={`${path}/${user_id}/learning-progress`} className="text-white">
-              Learning Progress
+              My Learning Progress
             </Link>
             <Link to={`${path}/${user_id}/payment`} className="text-white">
-              Payment
+              My Payment History
             </Link>
-            <button
-              className="btn btn-danger mt-3 m-3"
-              onClick={handleDelete}
-            >
+            <button className="btn btn-danger mt-3 m-3" onClick={handleDelete}>
               Logout
             </button>
           </div>

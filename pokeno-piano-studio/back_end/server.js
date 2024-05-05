@@ -422,7 +422,6 @@ app.post('/teachers/delete', (req, res) => {
 });
 
 app.get('/bookings', (req, res) => {
-    console.log("getting called");
     let sql = `
         SELECT 
             booking.*, 
@@ -460,11 +459,41 @@ app.get('/bookings', (req, res) => {
             return res.json(data);
         });
     } else {
-        // If neither teacher_id nor student_id is provided, return an error
-        return res.status(400).json({ error: "Please provide either teacher_id or student_id" });
+        // Process the SQL query without a WHERE clause
+        db.query(sql, (err, data) => {
+            if (err) {
+                console.error("Error fetching bookings:", err);
+                return res.status(500).json({ error: "Internal server error" });
+            }
+            return res.json(data);
+        });
     }
 });
 
+// Endpoint to add bookings
+app.post('/bookings/add', async (req, res) => {
+    try {
+        const bookingDataArray = req.body; // Assuming the request body contains booking data
+
+        // SQL query to insert booking data into the database
+        const addBookingSQL = `
+            INSERT INTO booking 
+                (teacher_id, student_id, lesson_type, booking_date, start_time, end_time) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        
+        // Loop through each booking data and execute the SQL query
+       
+        for (const booking of bookingDataArray) {
+            const { teacher_id, student_id, lesson_type, booking_date, start_time, end_time } = booking;
+            await db.query(addBookingSQL, [teacher_id, student_id, lesson_type, booking_date, start_time, end_time]);
+        }
+        return res.status(201).json({ message: "Booking(s) added successfully" });
+    } catch (error) {
+        console.error("Error adding booking:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 // Endpoint to fetch teacher ID based on user ID
 app.get('/teacher/:user_id', (req, res) => {
@@ -538,6 +567,29 @@ app.get('/teacher_availability', (req, res) => {
     });
 });
 
+// Update teacher_availability route
+app.post('/teacher_availability/update', (req, res) => {
+    const { teacher_id, day_of_week, start_time, end_time, is_booked } = req.body;
+  
+    const query = `
+      UPDATE teacher_availability 
+      SET is_booked = ? 
+      WHERE teacher_id = ? 
+      AND day_of_week = ? 
+      AND start_time = ? 
+      AND end_time = ? ;`
+  
+    db.query(query, [is_booked, teacher_id, day_of_week, start_time, end_time], (err, results) => {
+      if (err) {
+        console.error('Error updating teacher availability:', err);
+        res.status(500).send('Error updating teacher availability');
+        return;
+      }
+      console.log('Teacher availability updated');
+      res.status(200).send('Teacher availability updated');
+    });
+  });
+  
 
 app.post('/delete_availability/:eventId', (req, res) => {
     const eventId = req.params.eventId;
