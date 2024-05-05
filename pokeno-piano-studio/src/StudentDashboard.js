@@ -2,6 +2,7 @@ import axios from "axios";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import Profile from "./Profile";
 import StudentCalendar from "./StudentCalendar";
+import BookATimeSlot from "./BookATimeSlot";
 import { useHistory } from 'react-router-dom';
 
 
@@ -28,7 +29,7 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
           <h3> {name} </h3>
           <div className="sidebar-menu">
             <Link to={`${path}/${user_id}/profile`} className="text-white">
-              Profile
+              My Profile
             </Link>
             <Link to={`${path}/${user_id}/calendar`} className="text-white">
               My Lesson Schedule
@@ -36,19 +37,13 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
             <Link to={`${path}/${user_id}/book`} className="text-white">
               Book a Time Slot
             </Link>
-            <Link
-              to={`${path}/${user_id}/learning-progress`}
-              className="text-white"
-            >
-              Learning Progress
+            <Link to={`${path}/${user_id}/learning-progress`} className="text-white">
+              My Learning Progress
             </Link>
             <Link to={`${path}/${user_id}/payment`} className="text-white">
-              Payment
+              My Payment History
             </Link>
-            <button
-              className="btn btn-danger mt-3 m-3"
-              onClick={handleDelete}
-            >
+            <button className="btn btn-danger mt-3 m-3" onClick={handleDelete}>
               Logout
             </button>
           </div>
@@ -62,6 +57,12 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
               path={`${path}/${user_id}/calendar`}
               render={(props) => (
               <StudentCalendar {...props} user_id={user_id} />
+              )}
+           />
+           <Route
+              path={`${path}/${user_id}/book`}
+              render={(props) => (
+              <BookATimeSlot {...props} user_id={user_id} />
               )}
            />
         </Switch>

@@ -26,10 +26,10 @@ const AdminDashboard = ({ user_id, name, onLogout }) => {
             <h3> {name} </h3>
             <div className="sidebar-menu">
               <Link to={`${path}/${user_id}/profile`} className="text-white">
-                Profile
+                My Profile
               </Link>
               <Link to={`${path}/${user_id}/calendar`} className="text-white">
-                Calendar
+                Teaching Calendar
               </Link>
               <Link to={`${path}/${user_id}/teachers`} className="text-white">
                 View and Manage Teachers
