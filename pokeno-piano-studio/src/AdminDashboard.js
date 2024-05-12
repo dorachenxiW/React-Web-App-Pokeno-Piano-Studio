@@ -40,10 +40,7 @@ const AdminDashboard = ({ user_id, name, onLogout }) => {
               <Link to={`${path}/${user_id}/finanical_report`} className="text-white">
                 Financial Report 
               </Link>
-              <button
-                className="btn btn-danger mt-3 m-3"
-                onClick={handleDelete}
-              >
+              <button className="btn btn-danger mt-3 m-3" onClick={handleDelete}>
                 Logout
               </button>
             </div>

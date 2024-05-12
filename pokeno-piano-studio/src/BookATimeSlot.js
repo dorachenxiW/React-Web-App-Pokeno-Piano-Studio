@@ -4,6 +4,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import moment from 'moment';
+import Payment from './Payment';
 
 
 const BookATimeSlot = ({ user_id } ) => {
@@ -11,7 +12,9 @@ const BookATimeSlot = ({ user_id } ) => {
     const [selectedTeacher, setSelectedTeacher] = useState('');
     const [formSubmitted, setFormSubmitted] = useState(false);
     const [events, setEvents] = useState([]);
-
+    const [bookingConfirmed, setBookingConfirmed] = useState(false);
+    const [bookingDataArray, setBookingDataArray] = useState([]);
+    
     useEffect(() => {
         axios.get('http://localhost:5000/teachers')
             .then(response => {
@@ -37,7 +40,9 @@ const BookATimeSlot = ({ user_id } ) => {
     
     const handleBack = () => {
         setFormSubmitted(false); // Reset the formSubmitted state to false
-        setSelectedTeacher(''); // Clear the selected teacher
+        setSelectedTeacher(''); // Clear the selected teacherset
+        setFormSubmitted(false);
+        setBookingConfirmed(false);
     };
 
     const fetchTeacherAvailability = useCallback(async () => {
@@ -123,7 +128,7 @@ const BookATimeSlot = ({ user_id } ) => {
             const { dayOfWeek, startTime, endTime } = eventInfo.event._def.extendedProps;
             
             // Show the dialog using window.confirm
-            const confirmBooking = window.confirm('Please note: This is a booking for three months and payment will need to be paid in once.\n\nAre you sure you want to book this time slot?');
+            const confirmBooking = window.confirm('Please note: This is a booking for three months and tuition fees will need to be paid in once.\n\nAre you sure you want to book this time slot?');
     
             // Handle confirmation result
             if (confirmBooking) {
@@ -139,7 +144,6 @@ const BookATimeSlot = ({ user_id } ) => {
               
                 const datesForDayOfWeek = getDatesForDayOfWeek(dayOfWeek, startDate, endDate);
     
-                // Assuming you have the necessary data for the booking
                 const bookingDataArray = datesForDayOfWeek.map(date => ({
                     teacher_id: parseInt(selectedTeacher),
                     student_id: student_id,
@@ -148,23 +152,26 @@ const BookATimeSlot = ({ user_id } ) => {
                     start_time: startTime, 
                     end_time:endTime 
                 }));
-                //console.log(bookingDataArray)
-    
-                // Make POST requests to add bookings for each date to the booking table
-                await axios.post('http://localhost:5000/bookings/add', bookingDataArray);
+                console.log(bookingDataArray)
+                setBookingConfirmed(true);
+                setBookingDataArray(bookingDataArray);
                 
-                // Update the corresponding teacher_availability row
-                await axios.post('http://localhost:5000/teacher_availability/update', {
-                    teacher_id: parseInt(selectedTeacher),
-                    day_of_week: dayOfWeek,
-                    start_time: startTime, 
-                    end_time:endTime,
-                    is_booked: 1
-                });
-                fetchTeacherAvailability();
-                alert("You have successfully booked a new time slot for three months.")
+                
+                //Make POST requests to add bookings for each date to the booking table
+                // await axios.post('http://localhost:5000/bookings/add', bookingDataArray);
+                
+                // // Update the corresponding teacher_availability row
+                // await axios.post('http://localhost:5000/teacher_availability/update', {
+                //     teacher_id: parseInt(selectedTeacher),
+                //     day_of_week: dayOfWeek,
+                //     start_time: startTime, 
+                //     end_time:endTime,
+                //     is_booked: 1
+                // });
+                // fetchTeacherAvailability();
+                //alert("You have successfully booked a new time slot for three months.")
             } else {
-                console.log("Booking cancelled");
+                alert("Booking cancelled");
             }
         } catch (error) {
             console.error("Error:", error);
@@ -173,24 +180,61 @@ const BookATimeSlot = ({ user_id } ) => {
     };
     
     const filteredEvents = events.filter(event => !event.extendedProps.isBooked);
-
+    
+    const handlePayment = async (totalPrice) => {
+        // try {
+        //     // Make a POST request to add payment data to the database and get the payment ID
+        //     const paymentResponse = await axios.post('http://localhost:5000/payment/add', { amount: totalPrice });
+        //     const paymentId = paymentResponse.data.payment_id;
+    
+        //     // Update the booking_payment table to link the booking with the payment
+        //     await axios.post('http://localhost:5000/booking_payment/add', { booking_id: bookingId, payment_id: paymentId });
+        
+        //     // Display success message to the user
+        //     alert("You have successfully booked a new time slot for three months.");
+        // } catch (error) {
+        //     console.error("Error during payment:", error);
+        //     alert("Payment failed. Please try again later.");
+        // }
+        console.log("payment logic coming")
+    };
+    
+    
+    
+    
     return ( 
         <div>
             {!formSubmitted ? (
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                <h2 className="mb-4">Book A Time Slot</h2>
-                    <label>Please select a teacher who you would like to book with:</label>
-                    <select className="form-control" value={selectedTeacher} onChange={handleTeacherChange} required>
-                        <option disabled value="">Select a teacher</option>
-                        {teachers.map(teacher => (
-                            <option key={teacher.teacher_id} value={teacher.teacher_id}>{teacher.first_name} {teacher.last_name}</option>
-                        ))}
-                    </select>
+             <form onSubmit={handleSubmit} className="row justify-content-center">
+             <div className="col-md-8">
+                 <div className="form-group">
+                     <h2 className="mb-4">Book A Time Slot</h2>
+                     <label>Please select a teacher who you would like to book with:</label>
+                     <br/><br/>
+                     <select className="form-control" value={selectedTeacher} onChange={handleTeacherChange} required>
+                         <option disabled value="">Select a teacher</option>
+                         {teachers.map(teacher => (
+                             <option key={teacher.teacher_id} value={teacher.teacher_id}>{teacher.first_name} {teacher.last_name}</option>
+                         ))}
+                     </select>
+                 </div>
+                 <br />
+                 <button type="submit" className="custom-button-color">Submit</button>
+             </div>
+         </form>
+        
+            ) : bookingConfirmed ? (
+                <div>
+
+                {console.log("bookingDataArray:", bookingDataArray)}
+                <Payment 
+                 bookingDataArray={bookingDataArray}
+                 handleBack={handleBack}
+                 handlePayment={handlePayment}
+                 selectedTeacher={selectedTeacher}
+                />
                 </div>
-                <br/>
-                <button type="submit" className="custom-button-color">Submit</button>
-            </form>
+
             ) : (
                 <FullCalendar
                     plugins={[dayGridPlugin, timeGridPlugin]}
