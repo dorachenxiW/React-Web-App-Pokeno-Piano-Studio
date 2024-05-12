@@ -638,8 +638,27 @@ app.post('/add_availability', (req, res) => {
     });
 });
 
+// Route to handle POST request to create a new payment
+app.post('/payment/add', (req, res) => {
+    const { totalPrice, paymentDate } = req.body;
+    //const formattedPaymentDate = new Date(paymentDate).toISOString().slice(0, 10);
+    // SQL query to insert new payment into the payment table
+    const sql = 'INSERT INTO payment (amount, payment_date) VALUES (?, ?)';
 
+    // Parameters for SQL query
+    const values = [totalPrice, paymentDate];
 
+    // Execute SQL query
+    db.query(sql, values, (error, results, fields) => {
+        if (error) {
+            console.error("Error creating payment:", error);
+            res.status(500).json({ error: "Error creating payment" });
+        } else {
+            console.log("Payment created successfully");
+            res.status(200).json({ message: "Payment created successfully", paymentId: results.insertId });
+        }
+    });
+});
 
 app.listen(5000, () => {
     console.log("listening");

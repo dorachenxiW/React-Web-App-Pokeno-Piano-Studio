@@ -181,23 +181,37 @@ const BookATimeSlot = ({ user_id } ) => {
     
     const filteredEvents = events.filter(event => !event.extendedProps.isBooked);
     
-    const handlePayment = async (totalPrice) => {
-        // try {
-        //     // Make a POST request to add payment data to the database and get the payment ID
-        //     const paymentResponse = await axios.post('http://localhost:5000/payment/add', { amount: totalPrice });
-        //     const paymentId = paymentResponse.data.payment_id;
+    const handlePayment = async (eventInfo, totalPrice, bookingDataArray) => {
+        try {
+            const paymentDate = new Date().toISOString().slice(0, 10); 
+            console.log(paymentDate)
+            console.log(totalPrice)
     
-        //     // Update the booking_payment table to link the booking with the payment
-        //     await axios.post('http://localhost:5000/booking_payment/add', { booking_id: bookingId, payment_id: paymentId });
-        
-        //     // Display success message to the user
-        //     alert("You have successfully booked a new time slot for three months.");
-        // } catch (error) {
-        //     console.error("Error during payment:", error);
-        //     alert("Payment failed. Please try again later.");
-        // }
-        console.log("payment logic coming")
+            // Make a POST request to initiate the payment process
+            await axios.post('http://localhost:5000/payment/add', { totalPrice, paymentDate });
+    
+            // Assuming the payment gateway responds with a payment ID
+            //const paymentId = paymentResponse.data.paymentId;
+            //console.log(paymentId)
+    
+            // Make a POST request to add bookings for each date to the booking table
+            //await axios.post('http://localhost:5000/bookings/add', bookingDataArray);
+    
+            // Assuming you get the new created booking_id(s) after adding bookings
+            //const bookingIds = []; // Assuming this is an array of booking ids returned from the backend
+            
+            // Make a POST request to link the booking(s) with the payment in the booking_payment table
+            //await axios.post('http://localhost:5000/booking_payment/add', { bookingIds, paymentId });
+    
+            // Display success message to the user
+            alert("Payment successful. Your booking is confirmed!");
+        } catch (error) {
+            console.error("Error during payment:", error);
+            alert("Payment failed. Please try again later.");
+        }
     };
+    
+    
     
     
     

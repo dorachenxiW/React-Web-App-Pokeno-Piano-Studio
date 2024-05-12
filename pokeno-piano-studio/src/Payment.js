@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const Payment = ({ bookingDataArray, handleBack, handlePayment }) => {
+const Payment = ({ eventInfo,bookingDataArray, handleBack, handlePayment }) => {
     const [durationInMinutes, setDurationInMinutes] = useState(0);
     const [pricingData, setPricingData] = useState([]);
     const [totalLessons, setTotalLessons] = useState(0);
@@ -54,7 +54,7 @@ const Payment = ({ bookingDataArray, handleBack, handlePayment }) => {
             <p>Lesson Duration: {durationInMinutes} mins</p>
             <p>Total Number of Lessons: {totalLessons}</p>
             <p>Total Price: ${totalPrice}</p>
-            <button className="custom-button-color" onClick={handlePayment(totalPrice)}>Continue to Payment</button>
+            <button className="custom-button-color" onClick={() => handlePayment(eventInfo,totalPrice, bookingDataArray)}>Continue to Payment</button>
             <br/><br/>
             <button className="custom-button-color" onClick={handleCancel}>Cancel</button>
         </div>
