@@ -638,6 +638,31 @@ app.post('/add_availability', (req, res) => {
     });
 });
 
+app.post('/inquiry', (req, res) => {
+    const { name, email, phone, message } = req.body;
+
+    const sql = "INSERT INTO inquiries (name, email, phone, message) VALUES (?, ?, ?, ?)";
+    db.query(sql, [name, email, phone, message], (err, result) => {
+        if (err) {
+            console.error("Error adding inquiry:", err);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+        return res.status(201).json({ message: "Inquiry added successfully" });
+    });
+});
+
+// GET endpoint to retrieve all inquiries
+app.get('/inquiry', (req, res) => {
+    db.query('SELECT * FROM inquiries', (error, results) => {
+        if (error) {
+            console.error('Error fetching inquiries:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        } else {
+            res.json(results); // Return the inquiries
+        }
+    });
+});
+
 app.listen(5000, () => {
     console.log("listening");
 })

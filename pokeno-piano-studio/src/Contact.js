@@ -1,4 +1,53 @@
+import { useState } from 'react';
+import axios from 'axios';
+
 const Contact = () => {
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        message: ''
+    });
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        const { firstName, lastName, email, phone, message } = formData;
+
+        // Adjust the data structure as needed by your backend
+        const inquiryData = {
+            name: `${firstName} ${lastName}`,
+            email,
+            phone,
+            message
+        };
+
+        axios.post('http://localhost:5000/inquiry', inquiryData)
+            .then(response => {
+                console.log(response.data);
+                alert('Inquiry submitted successfully. You will receive an email back from the studio.');
+                setFormData({
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    phone: '',
+                    message: ''
+                }); // Clear form after submission
+            })
+            .catch(error => {
+                console.error('There was an error submitting the inquiry:', error);
+                alert('Error submitting inquiry');
+            });
+    };
+
     return (
         <div className="contact">
             <div className="contact-message">
@@ -6,7 +55,7 @@ const Contact = () => {
                 <h2>Send Us a Message</h2>
                 
                 <p>All questions en enquiries are welcome.
-                <br/><br/>
+                <br/>
                 Send us a message to start your musical journey now! 
                 <br/><br/><br/>
                 <b>Phone: 021 028 76516</b>
@@ -21,21 +70,21 @@ const Contact = () => {
                 
                 </div>
                 <div className="contact-form">
-                <form>
+                    <form onSubmit={handleSubmit}>
                         <label htmlFor="firstName">First Name:</label>
-                        <input type="text" id="firstName" name="firstName" required />
+                        <input type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleChange}required />
 
                         <label htmlFor="lastName">Last Name:</label>
-                        <input type="text" id="lastName" name="lastName" required />
+                        <input type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} required />
 
                         <label htmlFor="email">Email:</label>
-                        <input type="email" id="email" name="email" required />
+                        <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
 
                         <label htmlFor="phone">Phone:</label>
-                        <input type="tel" id="phone" name="phone" required />
+                        <input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleChange} required />
 
                         <label htmlFor="message">Message:</label>
-                        <textarea id="message" name="message" rows="5" required></textarea>
+                        <textarea id="message" name="message" rows="5" value={formData.message} onChange={handleChange} required></textarea>
 
                         <button type="submit" >Submit</button>
                     </form>
