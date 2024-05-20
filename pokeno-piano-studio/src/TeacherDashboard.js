@@ -5,6 +5,7 @@ import Students from "./Students";
 import TeacherCalendar from "./TeacherCalendar";
 import { useHistory } from 'react-router-dom';
 import Availability from "./Availability";
+import RecordStudentProgress from "./RecordStudentProgress";
 
 
 const TeacherDashboard = ({ user_id, name, onLogout }) => {
@@ -36,10 +37,7 @@ const TeacherDashboard = ({ user_id, name, onLogout }) => {
             <Link to={`${path}/${user_id}/availability`} className="text-white">
               My Availability
             </Link>
-            <Link
-              to={`${path}/${user_id}/record`}
-              className="text-white"
-            >
+            <Link to={`${path}/${user_id}/record`} className="text-white">
               Record Learning Progress
             </Link>
             <Link to={`${path}/${user_id}/students`} className="text-white">
@@ -57,6 +55,7 @@ const TeacherDashboard = ({ user_id, name, onLogout }) => {
       <div className="main-content">
         <Switch>
           <Route path={`${path}/${user_id}/profile`} component={Profile} />
+          <Route path={`${path}/${user_id}/record`} component={RecordStudentProgress} />
           <Route
               path={`${path}/${user_id}/calendar`}
               render={(props) => (
