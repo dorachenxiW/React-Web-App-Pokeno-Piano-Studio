@@ -72,7 +72,7 @@ const RecordStudentProgress = () => {
             ))}
           </select>
         </div>
-        <div>
+        <div className="form-group">
           <label>Progress Level:</label>
           <select className="form-control" value={progressLevel} onChange={handleProgressLevelChange}>
             <option value="">Select Level</option>
@@ -81,20 +81,24 @@ const RecordStudentProgress = () => {
             ))}
           </select>
         </div>
-        <div>
+        <div className="form-group">
           <label>Sub Level:</label>
+          <div>
           {[1, 2, 3, 4, 5].map(star => (
             <span
               key={star}
               style={{
                 cursor: 'pointer',
-                color: subLevel >= star ? 'gold' : 'grey'
+                color: subLevel >= star ? 'gold' : 'grey',
+                fontSize: '2em',
+                marginRight: '5px'
               }}
               onClick={() => handleSubLevelChange(star)}
             >
               ★
             </span>
           ))}
+          </div>
         </div>
         <div>
           <label>Comment:</label>
