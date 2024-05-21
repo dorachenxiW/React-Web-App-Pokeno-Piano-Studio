@@ -3,6 +3,7 @@ import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import Profile from "./Profile";
 import StudentCalendar from "./StudentCalendar";
 import BookATimeSlot from "./BookATimeSlot";
+import StudentProgress from "./StudentProgress";
 import { useHistory } from 'react-router-dom';
 
 
@@ -65,6 +66,12 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
               <BookATimeSlot {...props} user_id={user_id} />
               )}
            />
+           <Route
+            path={`${path}/${user_id}/learning-progress`}
+            render={(props) => (
+              <StudentProgress {...props} user_id={user_id} />
+            )}
+          />
         </Switch>
       </div>
     </div>
