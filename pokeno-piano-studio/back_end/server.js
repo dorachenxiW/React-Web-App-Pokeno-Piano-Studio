@@ -665,44 +665,36 @@ app.get('/inquiry', (req, res) => {
 
 app.post('/student-progress', (req, res) => {
     const { student_id, progress_level, sub_level, comment } = req.body;
+    const query = `INSERT INTO student_progress (student_id, progress_level, sub_level, comment) VALUES (?, ?, ?, ?)`;
   
-    // Start a transaction
-    db.beginTransaction(err => {
+    db.query(query, [student_id, progress_level, sub_level, comment], (err, results) => {
       if (err) {
-        return res.status(500).send('Error starting transaction');
+        return res.status(500).send('Error saving progress');
       }
-  
-      // Delete the existing progress record
-      const deleteQuery = 'DELETE FROM student_progress WHERE student_id = ?';
-      db.query(deleteQuery, [student_id], (err, results) => {
-        if (err) {
-          return connection.rollback(() => {
-            res.status(500).send('Error deleting old progress');
-          });
-        }
-  
-        // Insert the new progress record
-        const insertQuery = `INSERT INTO student_progress (student_id, progress_level, sub_level, comment) VALUES (?, ?, ?, ?)`;
-        db.query(insertQuery, [student_id, progress_level, sub_level, comment], (err, results) => {
-          if (err) {
-            return connection.rollback(() => {
-              res.status(500).send('Error saving new progress');
-            });
-          }
-  
-          // Commit the transaction
-          db.commit(err => {
-            if (err) {
-              return db.rollback(() => {
-                res.status(500).send('Error committing transaction');
-              });
-            }
-            res.status(201).send('Progress saved successfully');
-          });
-        });
-      });
+      res.status(201).send('Progress saved successfully');
     });
   });
+
+
+app.get('/student-progress/:student_id', (req, res) => {
+    const { student_id } = req.params;
+    
+    const query = `
+      SELECT progress_level, sub_level, comment 
+      FROM student_progress 
+      WHERE student_id = ? 
+      ORDER BY progress_id DESC 
+      LIMIT 1
+    `;
+    
+    db.query(query, [student_id], (err, results) => {
+      if (err) {
+        return res.status(500).send('Error fetching student progress');
+      }
+      res.json(results[0]);
+    });
+});
+  
 
 app.listen(5000, () => {
     console.log("listening");
