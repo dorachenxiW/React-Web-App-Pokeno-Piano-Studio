@@ -42,30 +42,31 @@ const StudentProgress = ({ user_id }) => {
   return (
     <div className="container">
       <h2 className="mb-4">My Learning Progress</h2>
-      <div className="card">
-        <div className="card-body">
-          <h5 className="card-title">
-            <strong>Progress Level:{' '}</strong> 
-            
-            {progress.progress_level}
-          </h5>
-          <p className="card-text">
-            <div>
-            {[...Array(5)].map((_, index) => (
-              <span
-                key={index}
-                style={{
-                  color: index < progress.sub_level ? 'gold' : 'grey',
-                  fontSize: '2em',
-                  marginRight: '5px',
-                }}
-              >
-                ★
-              </span>
-            ))}
-            </div>
-          </p>
-          <p className="card-text"><strong>Comment:</strong> {progress.comment}</p>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className="card mb-3" style={{ maxWidth: '400px', width: '100%' }}>
+          <div className="card-body">
+            <h5 className="card-title">
+              <strong>Progress Level:{' '}</strong> 
+              {progress.progress_level}
+            </h5>
+            <p className="card-text">
+              <div>
+                {[...Array(5)].map((_, index) => (
+                  <span
+                    key={index}
+                    style={{
+                      color: index < progress.sub_level ? 'gold' : 'grey',
+                      fontSize: '2em',
+                      marginRight: '5px',
+                    }}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+            </p>
+            <p className="card-text"><strong>Comment:</strong> {progress.comment}</p>
+          </div>
         </div>
       </div>
     </div>

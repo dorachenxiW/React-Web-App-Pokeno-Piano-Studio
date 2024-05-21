@@ -710,6 +710,22 @@ app.post('/record_exam_result', (req, res) => {
   });
 });
 
+// API Endpoint to Get Exam Results by Student ID
+app.get('/student-exam-results/:studentId', (req, res) => {
+    const studentId = req.params.studentId;
+    const query = `SELECT * FROM ABRSM_Exam_Result WHERE student_id = ? ORDER BY exam_date ASC`;
+
+  
+    db.query(query, studentId, (err, results) => {
+      if (err) {
+        console.error('Error fetching exam results:', err);
+        res.status(500).json({ error: 'Error fetching exam results' });
+        return;
+      }
+      res.status(200).json(results);
+    });
+  });
+
 app.listen(5000, () => {
     console.log("listening");
 })
