@@ -695,6 +695,20 @@ app.get('/student-progress/:student_id', (req, res) => {
     });
 });
   
+// API Endpoint to Record Exam Result
+app.post('/record_exam_result', (req, res) => {
+  const { student_id, exam_date, exam_level, result, assessment } = req.body;
+  const query = `INSERT INTO ABRSM_Exam_Result (student_id, exam_date, exam_level, result, assessment) VALUES (?, ?, ?, ?, ?)`;
+  const values = [student_id, exam_date, exam_level, result, assessment];
+
+  db.query(query, values, (err, result) => {
+    if (err) {
+      res.status(500).send('Error recording exam result');
+      return;
+    }
+    res.status(200).send('Exam result recorded successfully');
+  });
+});
 
 app.listen(5000, () => {
     console.log("listening");
