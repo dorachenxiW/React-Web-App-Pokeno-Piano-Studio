@@ -748,17 +748,94 @@ app.post('/completeBooking', async (req, res) => {
 });
 
 
-// // Insert booking_payment records
-// await client.query(
-//     'INSERT INTO booking_payment(booking_id, payment_id) VALUES($1, $2)', 
-//     [bookingId, paymentId]
-//     );
+app.post('/inquiry', (req, res) => {
+    const { name, email, phone, message } = req.body;
 
-// // Update teacher_availability to mark as booked
-//     await client.query(
-//         'UPDATE teacher_availability SET is_booked = TRUE WHERE id = $1', 
-//         [booking.teacher_availability_id]
-//     );
+    const sql = "INSERT INTO inquiries (name, email, phone, message) VALUES (?, ?, ?, ?)";
+    db.query(sql, [name, email, phone, message], (err, result) => {
+        if (err) {
+            console.error("Error adding inquiry:", err);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+        return res.status(201).json({ message: "Inquiry added successfully" });
+    });
+});
+
+// GET endpoint to retrieve all inquiries
+app.get('/inquiry', (req, res) => {
+    db.query('SELECT * FROM inquiries', (error, results) => {
+        if (error) {
+            console.error('Error fetching inquiries:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        } else {
+            res.json(results); // Return the inquiries
+        }
+    });
+});
+
+app.post('/student-progress', (req, res) => {
+    const { student_id, progress_level, sub_level, comment } = req.body;
+    const query = `INSERT INTO student_progress (student_id, progress_level, sub_level, comment) VALUES (?, ?, ?, ?)`;
+  
+    db.query(query, [student_id, progress_level, sub_level, comment], (err, results) => {
+      if (err) {
+        return res.status(500).send('Error saving progress');
+      }
+      res.status(201).send('Progress saved successfully');
+    });
+  });
+
+
+app.get('/student-progress/:student_id', (req, res) => {
+    const { student_id } = req.params;
+    
+    const query = `
+      SELECT progress_level, sub_level, comment 
+      FROM student_progress 
+      WHERE student_id = ? 
+      ORDER BY progress_id DESC 
+      LIMIT 1
+    `;
+    
+    db.query(query, [student_id], (err, results) => {
+      if (err) {
+        return res.status(500).send('Error fetching student progress');
+      }
+      res.json(results[0]);
+    });
+});
+  
+// API Endpoint to Record Exam Result
+app.post('/record_exam_result', (req, res) => {
+  const { student_id, exam_date, exam_level, result, assessment } = req.body;
+  const query = `INSERT INTO ABRSM_Exam_Result (student_id, exam_date, exam_level, result, assessment) VALUES (?, ?, ?, ?, ?)`;
+  const values = [student_id, exam_date, exam_level, result, assessment];
+
+  db.query(query, values, (err, result) => {
+    if (err) {
+      res.status(500).send('Error recording exam result');
+      return;
+    }
+    res.status(200).send('Exam result recorded successfully');
+  });
+});
+
+// API Endpoint to Get Exam Results by Student ID
+app.get('/student-exam-results/:studentId', (req, res) => {
+    const studentId = req.params.studentId;
+    const query = `SELECT * FROM ABRSM_Exam_Result WHERE student_id = ? ORDER BY exam_date ASC`;
+
+  
+    db.query(query, studentId, (err, results) => {
+      if (err) {
+        console.error('Error fetching exam results:', err);
+        res.status(500).json({ error: 'Error fetching exam results' });
+        return;
+      }
+      res.status(200).json(results);
+    });
+  });
+
 
 app.listen(5000, () => {
     console.log("listening");

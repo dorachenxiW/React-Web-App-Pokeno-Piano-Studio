@@ -5,6 +5,7 @@ import Students from "./Students";
 import Teachers from "./Teachers";
 import { useHistory } from 'react-router-dom';
 import AdminCalendar from "./AdminCalendar";
+import Inquiry from "./Inquiry"
 
 const AdminDashboard = ({ user_id, name, onLogout }) => {
     const { path } = useRouteMatch();
@@ -37,6 +38,9 @@ const AdminDashboard = ({ user_id, name, onLogout }) => {
               <Link to={`${path}/${user_id}/students`} className="text-white">
                 View and Manage Students
               </Link>
+              <Link to={`${path}/${user_id}/inquiry`} className="text-white">
+                Inquiries 
+              </Link>
               <Link to={`${path}/${user_id}/finanical_report`} className="text-white">
                 Financial Report 
               </Link>
@@ -52,6 +56,7 @@ const AdminDashboard = ({ user_id, name, onLogout }) => {
             <Route path={`${path}/${user_id}/students`} component={Students} />
             <Route path={`${path}/${user_id}/teachers`} component={Teachers} />
             <Route path={`${path}/${user_id}/calendar`} component={AdminCalendar} />
+            <Route path={`${path}/${user_id}/inquiry`} component={Inquiry} />
           </Switch>
         </div>
       </div>
