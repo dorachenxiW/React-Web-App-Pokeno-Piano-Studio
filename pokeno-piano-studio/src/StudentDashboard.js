@@ -4,6 +4,7 @@ import Profile from "./Profile";
 import StudentCalendar from "./StudentCalendar";
 import BookATimeSlot from "./BookATimeSlot";
 import StudentProgress from "./StudentProgress";
+import PaymentHistory from "./PaymentHistory";
 import ABRSMResult from "./ABRSMResult";
 import { useHistory } from 'react-router-dom';
 
@@ -45,7 +46,7 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
             <Link to={`${path}/${user_id}/exam`} className="text-white">
               My ABRSM Exam Result
             </Link>
-            <Link to={`${path}/${user_id}/payment`} className="text-white">
+            <Link to={`${path}/${user_id}/payment-history`} className="text-white">
               My Payment History
             </Link>
             <button className="btn btn-danger mt-3 m-3" onClick={handleDelete}>
@@ -82,6 +83,12 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
               <ABRSMResult {...props} user_id={user_id} />
             )}
            />
+           <Route
+            path={`${path}/${user_id}/payment-history`}
+            render={(props) => (
+              <PaymentHistory {...props} user_id={user_id} />
+                )}
+            />
         </Switch>
       </div>
     </div>

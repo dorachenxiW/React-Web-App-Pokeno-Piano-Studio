@@ -6,6 +6,7 @@ import Teachers from "./Teachers";
 import { useHistory } from 'react-router-dom';
 import AdminCalendar from "./AdminCalendar";
 import Inquiry from "./Inquiry"
+import FinancialReport from "./FinancialReport";
 
 const AdminDashboard = ({ user_id, name, onLogout }) => {
     const { path } = useRouteMatch();
@@ -41,7 +42,7 @@ const AdminDashboard = ({ user_id, name, onLogout }) => {
               <Link to={`${path}/${user_id}/inquiry`} className="text-white">
                 Inquiries 
               </Link>
-              <Link to={`${path}/${user_id}/finanical_report`} className="text-white">
+              <Link to={`${path}/${user_id}/financial_report`} className="text-white">
                 Financial Report 
               </Link>
               <button className="btn btn-danger mt-3 m-3" onClick={handleDelete}>
@@ -57,6 +58,7 @@ const AdminDashboard = ({ user_id, name, onLogout }) => {
             <Route path={`${path}/${user_id}/teachers`} component={Teachers} />
             <Route path={`${path}/${user_id}/calendar`} component={AdminCalendar} />
             <Route path={`${path}/${user_id}/inquiry`} component={Inquiry} />
+            <Route path={`${path}/${user_id}/financial_report`} component={FinancialReport} />
           </Switch>
         </div>
       </div>
