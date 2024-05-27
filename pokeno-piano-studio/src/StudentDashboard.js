@@ -47,8 +47,6 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
       .catch(error => console.error("Error fetching student:", error));
   }, [user_id]);
 
-  
-
   return (
     <div className="dashboard-container">
       <div className="sidebar">
@@ -102,14 +100,15 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
                 .slice(0, 5) // Take the first three elements after sorting
                 .map(booking => {
                   // Parse booking date and times using moment.js
-                  const bookingDate = moment(booking.booking_date);
+  
                   const startTime = moment(booking.start_time, 'HH:mm:ss');
                   const endTime = moment(booking.end_time, 'HH:mm:ss');
 
                   return (
                     <div key={booking.booking_id} className="card mb-3" style={{ maxWidth: '400px', width: '100%' }}>
                       <div className="card-body" style={{ color: '#f1356d' }} >
-                        <h5 className="card-title">Lesson Date: {bookingDate.format('LL')}</h5>
+                      
+                        <h5 className="card-title">Lesson Date: {new Date(booking.booking_date).toLocaleDateString()}</h5>
                         <p className="card-text">Time: {`${startTime.format('LT')} - ${endTime.format('LT')}`}</p>
                       </div>
                     </div>
