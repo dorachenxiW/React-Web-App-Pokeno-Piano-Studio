@@ -49,7 +49,7 @@ const PaymentHistory = ({ user_id }) => {
     }
 
     return (
-        <div className="container mt-4">
+        <div className="container">
             <h2>Payment History</h2>
             {paymentHistory.length === 0 ? (
                 <p>No payment history available.</p>

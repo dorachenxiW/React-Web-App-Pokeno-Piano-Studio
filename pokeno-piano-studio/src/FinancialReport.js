@@ -78,7 +78,7 @@ const FinancialReport = () => {
 
     return (
         <div className="container">
-            <h2>Financial Report</h2>
+            <h2>Financial Analysis</h2>
             <div className="card mb-4">
                 <div className="card-body">
                     <h3> Current Year-to-Date Total Payments: ${yearToDate.toFixed(2)}</h3>
