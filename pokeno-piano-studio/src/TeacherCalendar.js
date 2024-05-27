@@ -108,7 +108,7 @@ const TeacherCalendar = ({ user_id }) => {
                         html: true,
                     });
                 }}
-                height={"95vh"}
+                height={"87vh"}
             />
         </div>
     );

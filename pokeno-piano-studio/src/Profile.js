@@ -286,7 +286,15 @@ const Profile = () => {
                                 onChange={e => setConfirmPassword(e.target.value)}
                             />
                         </div>
-                        <button className="btn btn-primary mr-2" onClick={handleSubmitChangePassword}>
+                        <p></p>
+                        <button className="btn btn-primary mr-2" onClick={handleSubmitChangePassword}
+                        style={{color: "black",
+                        backgroundColor: "#F4C2C2",
+                        borderRadius: '8px',
+                        border: 'none', // Optionally remove the border to match the Link style
+                        outline: 'none', // Optionally remove the outline on focus
+                        padding: '0.6rem 1rem', // Increase padding to make the button bigger
+                        fontSize: '1rem'}}>
                             Submit
                         </button>
                         <button className="btn btn-secondary" onClick={handleCancelChangePassword}>

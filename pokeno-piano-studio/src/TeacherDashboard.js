@@ -9,9 +9,9 @@ import RecordStudentProgress from "./RecordStudentProgress";
 import RecordExamResult from "./RecordExamResult";
 
 
+
 const TeacherDashboard = ({ user_id, name, onLogout }) => {
     const { path } = useRouteMatch();
-
     const history = useHistory();
 
     const handleDelete = () => {
@@ -21,6 +21,8 @@ const TeacherDashboard = ({ user_id, name, onLogout }) => {
           history.push('/login'); // Redirect to the login page
       }).catch(err => console.log(err));
     }
+
+   
   
     return (
         <div className="dashboard-container">
@@ -29,6 +31,9 @@ const TeacherDashboard = ({ user_id, name, onLogout }) => {
           <h3>Welcome to Teacher Dashboard!</h3>
           <h3> {name} </h3>
           <div className="sidebar-menu">
+            <Link to={`${path}/${user_id}`} className="text-white">
+              Dashboard Home
+            </Link>
             <Link to={`${path}/${user_id}/profile`} className="text-white">
               My Profile
             </Link>
@@ -58,6 +63,14 @@ const TeacherDashboard = ({ user_id, name, onLogout }) => {
       </div>
       <div className="main-content">
         <Switch>
+          <Route exact path={`${path}/${user_id}`} >
+             <h2>Welcome back, {name}!</h2>
+             <p style={{ color: '#f1356d' }}>Click on the left side bar for more detailed information and functions.</p>
+             <div>
+                 <TeacherCalendar user_id={user_id}/>
+             </div>
+             
+         </Route>
           <Route path={`${path}/${user_id}/profile`} component={Profile} />
           <Route path={`${path}/${user_id}/record`} component={RecordStudentProgress} />
           <Route path={`${path}/${user_id}/exam`} component={RecordExamResult} />
