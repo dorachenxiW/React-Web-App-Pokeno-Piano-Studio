@@ -17,6 +17,7 @@ const GetStarted = () => {
         axios.post("http://localhost:5000/signup", values)
         .then(res => {
             if (res.data.Status === "Success") {
+                alert("New student created succesfully.")
                 history.push('/login')
             } else {
                 alert("Error: " + res.data.error); // Display specific error message from backend

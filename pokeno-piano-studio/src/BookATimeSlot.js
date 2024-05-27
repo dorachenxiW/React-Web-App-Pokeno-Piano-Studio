@@ -7,13 +7,14 @@ import moment from 'moment';
 import Payment from './Payment';
 
 
-const BookATimeSlot = ({ user_id } ) => {
+const BookATimeSlot = ({ user_id, path } ) => {
     const [teachers, setTeachers] = useState([]);
     const [selectedTeacher, setSelectedTeacher] = useState('');
     const [formSubmitted, setFormSubmitted] = useState(false);
     const [events, setEvents] = useState([]);
     const [bookingConfirmed, setBookingConfirmed] = useState(false);
     const [bookingDataArray, setBookingDataArray] = useState([]);
+    const [teacher_availability_id, setTeacherAvailabilityID] = useState('');
     
     useEffect(() => {
         axios.get('http://localhost:5000/teachers')
@@ -74,7 +75,7 @@ const BookATimeSlot = ({ user_id } ) => {
                                     start: day.clone().set({ 'hour': startTime.hours(), 'minute': startTime.minutes() }).toDate(),
                                     end: day.clone().set({ 'hour': endTime.hours(), 'minute': endTime.minutes() }).toDate(),
                                     backgroundColor: slot.is_booked ? '#F4C2C2': '#f1356d',
-                                    extendedProps: { id: slot.id, isBooked: slot.is_booked, startTime: startTime.format('HH:mm'), endTime: endTime.format('HH:mm'), dayOfWeek: slot.day_of_week },
+                                    extendedProps: { teacher_availability_id: slot.id, isBooked: slot.is_booked, startTime: startTime.format('HH:mm'), endTime: endTime.format('HH:mm'), dayOfWeek: slot.day_of_week },
                                     display: 'block', // Set display to block to allow custom rendering
                                 };
 
@@ -125,7 +126,7 @@ const BookATimeSlot = ({ user_id } ) => {
     
     const handleBook = async (eventInfo, selectedTeacher, user_id) => {
         try {
-            const { dayOfWeek, startTime, endTime } = eventInfo.event._def.extendedProps;
+            const { dayOfWeek, startTime, endTime, teacher_availability_id } = eventInfo.event._def.extendedProps;
             
             // Show the dialog using window.confirm
             const confirmBooking = window.confirm('Please note: This is a booking for three months and tuition fees will need to be paid in once.\n\nAre you sure you want to book this time slot?');
@@ -155,19 +156,8 @@ const BookATimeSlot = ({ user_id } ) => {
                 console.log(bookingDataArray)
                 setBookingConfirmed(true);
                 setBookingDataArray(bookingDataArray);
+                setTeacherAvailabilityID(teacher_availability_id);
                 
-                
-                //Make POST requests to add bookings for each date to the booking table
-                // await axios.post('http://localhost:5000/bookings/add', bookingDataArray);
-                
-                // // Update the corresponding teacher_availability row
-                // await axios.post('http://localhost:5000/teacher_availability/update', {
-                //     teacher_id: parseInt(selectedTeacher),
-                //     day_of_week: dayOfWeek,
-                //     start_time: startTime, 
-                //     end_time:endTime,
-                //     is_booked: 1
-                // });
                 // fetchTeacherAvailability();
                 //alert("You have successfully booked a new time slot for three months.")
             } else {
@@ -181,7 +171,7 @@ const BookATimeSlot = ({ user_id } ) => {
     
     const filteredEvents = events.filter(event => !event.extendedProps.isBooked);
     
-    const handlePayment = async (eventInfo, totalPrice, bookingDataArray) => {
+    /* const handlePayment = async (eventInfo, totalPrice, bookingDataArray) => {
         try {
             const paymentDate = new Date().toISOString().slice(0, 10); 
             console.log(paymentDate)
@@ -209,12 +199,7 @@ const BookATimeSlot = ({ user_id } ) => {
             console.error("Error during payment:", error);
             alert("Payment failed. Please try again later.");
         }
-    };
-    
-    
-    
-    
-    
+    }; */
     
     return ( 
         <div>
@@ -244,8 +229,10 @@ const BookATimeSlot = ({ user_id } ) => {
                 <Payment 
                  bookingDataArray={bookingDataArray}
                  handleBack={handleBack}
-                 handlePayment={handlePayment}
                  selectedTeacher={selectedTeacher}
+                 teacher_availability_id={teacher_availability_id}
+                 user_id={user_id}
+                 path={path}
                 />
                 </div>
 

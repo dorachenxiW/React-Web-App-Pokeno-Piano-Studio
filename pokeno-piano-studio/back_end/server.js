@@ -16,18 +16,27 @@ app.use(cors({
 }));
 app.use(cookieParser());
 
-const db = mysql.createConnection({
+/* const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'password',
     database: 'PPS_db'
-})
+}) */
 
-app.get('/', (re,res) => {
+const db = mysql.createPool({
+    connectionLimit: 10, // Adjust this limit as per your requirements
+    host: 'localhost',
+    user: 'root',
+    password: 'password',
+    database: 'PPS_db'
+});
+
+
+app.get('/', (re, res) => {
     return res.json("Hello from Backend!");
 })
 
-app.get('/users', (req,res) => {
+app.get('/users', (req, res) => {
     const sql = "SELECT * FROM user";
     db.query(sql, (err, data) => {
         if (err) return res.json(err);
@@ -47,7 +56,7 @@ app.get('/students', (req, res) => {
 });
 
 app.post('/students', (req, res) => {
-    const { first_name, last_name, email, phone_number} = req.body;
+    const { first_name, last_name, email, phone_number } = req.body;
     const role = 'student'; // Assuming the role is hardcoded as 'student'
     const password = '$2b$10$/UHz6nobtXuBOk1xpPeGout0M3XwsH2XfGA5I8jTyvxkRZTRZVU5i'; // You may want to generate a random password or use a default one
     const userSql = "INSERT INTO user (first_name, last_name, email, role, password) VALUES (?, ?, ?, ?, ?)";
@@ -59,7 +68,7 @@ app.post('/students', (req, res) => {
             return res.status(500).json({ error: "Internal server error" });
         }
         const user_id = result.insertId; // Get the auto-generated user_id
-        db.query(studentSql, [first_name, last_name, email, phone_number,user_id], (err, result) => {
+        db.query(studentSql, [first_name, last_name, email, phone_number, user_id], (err, result) => {
             if (err) {
                 console.error("Error adding student:", err);
                 return res.status(500).json({ error: "Internal server error" });
@@ -86,7 +95,7 @@ app.post('/students/delete', (req, res) => {
         if (studentResult.affectedRows === 0) {
             return res.status(404).json({ error: "Student not found" });
         }
-        
+
         // If student is deleted successfully from student table, delete corresponding user from user table
         const deleteUserSQL = "DELETE FROM user WHERE user_id = ?";
         db.query(deleteUserSQL, [userId], (err, userResult) => {
@@ -142,9 +151,9 @@ app.post('/students/edit/:userId', (req, res) => {
     });
 });
 
-app.get('/pricing', (req,res) => {
+app.get('/pricing', (req, res) => {
     const sql = "SELECT * FROM pricing";
-    db.query(sql,(err, data) => {
+    db.query(sql, (err, data) => {
         if (err) return res.json(err);
         return res.json(data);
     })
@@ -182,11 +191,11 @@ const verifyUser = (req, res, next) => {
 app.get('/auth', verifyUser, (req, res) => {
     //console.log(user_id)
     return res.json({
-         Status: "Success", 
-         name: req.name,
-         role: req.role, // Include the user's role in the response
-         user_id: req.user_id 
-        });
+        Status: "Success",
+        name: req.name,
+        role: req.role, // Include the user's role in the response
+        user_id: req.user_id
+    });
 })
 
 app.post('/signup', (req, res) => {
@@ -195,7 +204,7 @@ app.post('/signup', (req, res) => {
     const getUserIdSql = "SELECT user_id FROM user WHERE email = ?";
 
     bcrypt.hash(req.body.password.toString(), salt, (err, hash) => {
-        if (err) return res.json({error: "Error for hashing password."})
+        if (err) return res.json({ error: "Error for hashing password." })
         const values = [
             req.body.first_name,
             req.body.last_name,
@@ -206,13 +215,13 @@ app.post('/signup', (req, res) => {
         db.query(userSql, [values], (err, result) => {
             if (err) {
                 console.error("Error inserting user data:", err);
-                return res.json({Error: "Inserting user data error in server"});
+                return res.json({ Error: "Inserting user data error in server" });
             }
             // Fetch user_id of the inserted user
             db.query(getUserIdSql, [req.body.email], (err, getUserIdResult) => {
                 if (err || getUserIdResult.length === 0) {
                     console.error("Error fetching user_id:", err);
-                    return res.json({Error: "Error fetching user_id"});
+                    return res.json({ Error: "Error fetching user_id" });
                 }
                 const user_id = getUserIdResult[0].user_id;
                 // Insert into student table
@@ -225,9 +234,9 @@ app.post('/signup', (req, res) => {
                 db.query(studentSql, [studentValues], (err, studentResult) => {
                     if (err) {
                         console.error("Error inserting student data:", err);
-                        return res.json({Error: "Inserting student data error in server"});
+                        return res.json({ Error: "Inserting student data error in server" });
                     }
-                    return res.json ({Status: "Success"});
+                    return res.json({ Status: "Success" });
                 });
             });
         });
@@ -244,14 +253,15 @@ app.post('/login', (req, res) => {
                 if (err) return res.json({ Error: "Password compare error" });
                 if (response) {
                     const name = data[0].first_name + " " + data[0].last_name;
-                    const email = req.body.email; 
-                    const user_id =data[0].user_id;
+                    const email = req.body.email;
+                    const user_id = data[0].user_id;
                     // const role = data[0].role;
                     console.log(user_id)
-                    const token = jwt.sign({ name, email}, "jwt-secret-key", { expiresIn: '1d' });
+                    const token = jwt.sign({ name, email }, "jwt-secret-key", { expiresIn: '1d' });
                     res.cookie('token', token, { sameSite: 'None', secure: true }); // Set SameSite attribute
-                    return res.json({ Status: "Success", user_id
-                 });
+                    return res.json({
+                        Status: "Success", user_id
+                    });
                 } else {
                     return res.json({ Error: "Password not matched" });
                 }
@@ -265,13 +275,13 @@ app.post('/login', (req, res) => {
 
 app.get('/logout', (req, res) => {
     res.clearCookie('token');
-    return res.json({Status: "Success"});
+    return res.json({ Status: "Success" });
 })
 
 app.get('/profile', verifyUser, (req, res) => {
     const userEmail = req.email; // Extract email from req object
     const userRole = req.role; // Extract user's role from req object
-    
+
     let sql;
     switch (userRole) {
         case 'admin':
@@ -286,8 +296,8 @@ app.get('/profile', verifyUser, (req, res) => {
         default:
             return res.status(400).json({ Error: "Invalid user role" });
     }
-    
-    db.query(sql,  [userEmail], (err, result) => {
+
+    db.query(sql, [userEmail], (err, result) => {
         if (err) {
             console.error("Error fetching profile data:", err);
             return res.status(500).json({ Error: "Internal server error" });
@@ -317,7 +327,7 @@ app.post('/profile', verifyUser, (req, res) => {
 });
 
 app.get('/teachers', (req, res) => {
-    const sql = "SELECT * FROM teacher"; 
+    const sql = "SELECT * FROM teacher";
     db.query(sql, (err, data) => {
         if (err) {
             console.error("Error fetching teachers:", err);
@@ -328,7 +338,7 @@ app.get('/teachers', (req, res) => {
 });
 
 app.post('/teachers', (req, res) => {
-    const { first_name, last_name, email, phone_number} = req.body;
+    const { first_name, last_name, email, phone_number } = req.body;
     const role = 'teacher'; // Assuming the role is hardcoded as 'student'
     const password = '$2b$10$/UHz6nobtXuBOk1xpPeGout0M3XwsH2XfGA5I8jTyvxkRZTRZVU5i'; // You may want to generate a random password or use a default one
     const userSql = "INSERT INTO user (first_name, last_name, email, role, password) VALUES (?, ?, ?, ?, ?)";
@@ -340,7 +350,7 @@ app.post('/teachers', (req, res) => {
             return res.status(500).json({ error: "Internal server error" });
         }
         const user_id = result.insertId; // Get the auto-generated user_id
-        db.query(teacherSql, [first_name, last_name, email, phone_number,user_id], (err, result) => {
+        db.query(teacherSql, [first_name, last_name, email, phone_number, user_id], (err, result) => {
             if (err) {
                 console.error("Error adding teacher:", err);
                 return res.status(500).json({ error: "Internal server error" });
@@ -403,7 +413,7 @@ app.post('/teachers/delete', (req, res) => {
         if (teacherResult.affectedRows === 0) {
             return res.status(404).json({ error: "Teacher not found" });
         }
-        
+
         // If teacher is deleted successfully from teacher table, delete corresponding user from user table
         const deleteUserSQL = "DELETE FROM user WHERE user_id = ?";
         db.query(deleteUserSQL, [userId], (err, userResult) => {
@@ -481,9 +491,9 @@ app.post('/bookings/add', async (req, res) => {
                 (teacher_id, student_id, lesson_type, booking_date, start_time, end_time) 
             VALUES (?, ?, ?, ?, ?, ?)
         `;
-        
+
         // Loop through each booking data and execute the SQL query
-       
+
         for (const booking of bookingDataArray) {
             const { teacher_id, student_id, lesson_type, booking_date, start_time, end_time } = booking;
             await db.query(addBookingSQL, [teacher_id, student_id, lesson_type, booking_date, start_time, end_time]);
@@ -516,7 +526,7 @@ app.get('/teacher/:user_id', (req, res) => {
 app.get('/student/:user_id', (req, res) => {
     const { user_id } = req.params;
     // Assuming you have a query to fetch the student ID associated with the given user ID from your database
-    
+
     db.query('SELECT student_id From student WHERE user_id =?', [user_id], (error, results) => {
         if (error) {
             console.error('Error fetching student ID:', error);
@@ -567,29 +577,6 @@ app.get('/teacher_availability', (req, res) => {
     });
 });
 
-// Update teacher_availability route
-app.post('/teacher_availability/update', (req, res) => {
-    const { teacher_id, day_of_week, start_time, end_time, is_booked } = req.body;
-  
-    const query = `
-      UPDATE teacher_availability 
-      SET is_booked = ? 
-      WHERE teacher_id = ? 
-      AND day_of_week = ? 
-      AND start_time = ? 
-      AND end_time = ? ;`
-  
-    db.query(query, [is_booked, teacher_id, day_of_week, start_time, end_time], (err, results) => {
-      if (err) {
-        console.error('Error updating teacher availability:', err);
-        res.status(500).send('Error updating teacher availability');
-        return;
-      }
-      console.log('Teacher availability updated');
-      res.status(200).send('Teacher availability updated');
-    });
-  });
-  
 
 app.post('/delete_availability/:eventId', (req, res) => {
     const eventId = req.params.eventId;
@@ -619,7 +606,7 @@ app.post('/add_availability', (req, res) => {
     const [startHour, startMinute] = startTime.split(':').map(Number);
     const startDateTime = new Date();
     startDateTime.setHours(startHour, startMinute, 0, 0);
-    
+
     const endDateTime = new Date(startDateTime.getTime() + duration * 60000); // Convert duration to milliseconds
 
     // Execute the SQL query to add availability
@@ -628,7 +615,7 @@ app.post('/add_availability', (req, res) => {
             console.error("Error adding availability:", error);
             return res.status(500).json({ error: "Internal server error" });
         }
-        
+
         // Check if the availability was added successfully
         if (result.affectedRows === 1) {
             return res.status(201).json({ message: "Availability added successfully" });
@@ -638,27 +625,140 @@ app.post('/add_availability', (req, res) => {
     });
 });
 
-// Route to handle POST request to create a new payment
-app.post('/payment/add', (req, res) => {
-    const { totalPrice, paymentDate } = req.body;
-    //const formattedPaymentDate = new Date(paymentDate).toISOString().slice(0, 10);
-    // SQL query to insert new payment into the payment table
-    const sql = 'INSERT INTO payment (amount, payment_date) VALUES (?, ?)';
+app.post('/completeBooking', async (req, res) => {
+    const { totalPrice, bookingDataArray, teacher_availability_id } = req.body;
 
-    // Parameters for SQL query
-    const values = [totalPrice, paymentDate];
+    try {
+        db.getConnection((err, connection) => {
+            if (err) {
+                console.error('Error getting database connection:', err);
+                return res.status(500).json({ success: false, error: 'Internal server error' });
+            }
 
-    // Execute SQL query
-    db.query(sql, values, (error, results, fields) => {
-        if (error) {
-            console.error("Error creating payment:", error);
-            res.status(500).json({ error: "Error creating payment" });
-        } else {
-            console.log("Payment created successfully");
-            res.status(200).json({ message: "Payment created successfully", paymentId: results.insertId });
-        }
-    });
+            // Begin transaction
+            connection.beginTransaction(async (err) => {
+                if (err) {
+                    connection.release();
+                    console.error('Error beginning transaction:', err);
+                    return res.status(500).json({ success: false, error: 'Internal server error' });
+                }
+
+                try {
+                    // Insert payment record
+                    console.log("going in payment query")
+                    const paymentInsertResult = await new Promise((resolve, reject) => {
+                        connection.query(
+                            'INSERT INTO payment(amount, payment_date) VALUES (?, ?)',
+                            [totalPrice, new Date()],
+                            (error, paymentResult) => {
+                                if (error) {
+                                    console.error('Error inserting payment:', error);
+                                    reject(error);
+                                } else {
+                                    resolve(paymentResult);
+                                }
+                            }
+                        );
+                    });
+
+                    const paymentId = paymentInsertResult.insertId;
+                    console.log('Payment ID:', paymentId);
+
+                    for (let booking of bookingDataArray) {
+                        console.log(booking)
+                        console.log('going in booking query')
+                        // Insert booking record
+                        const bookingInsertResult = await new Promise((resolve, reject) => {
+                            connection.query(
+                                'INSERT INTO booking(student_id, teacher_id, lesson_type, booking_date, start_time, end_time) VALUES(?,?,?,?,?,?)',
+                                [booking.student_id, booking.teacher_id, booking.lesson_type, booking.booking_date, booking.start_time, booking.end_time],
+                                (error, bookingResult) => {
+                                    if (error) {
+                                        console.error('Error inserting booking:', error);
+                                        reject(error);
+                                    } else {
+                                        resolve(bookingResult);
+                                    }
+                                }
+                            );
+                        });
+
+                        const bookingID = bookingInsertResult.insertId;
+                        console.log(bookingID);
+
+                        // Insert into booking_payment table
+                        const bookingPaymentInsertResult = await new Promise((resolve, reject) => {
+                            connection.query(
+                                'INSERT INTO booking_payment(booking_id, payment_id) VALUES (?, ?)',
+                                [bookingID, paymentId],
+                                (error, bookingPaymentResult) => {
+                                    if (error) {
+                                        console.error('Error inserting booking payment:', error);
+                                        reject(error);
+                                    } else {
+                                        resolve(bookingPaymentResult);
+                                    }
+                                }
+                            );
+                        });
+
+                        //console.log('Booking payment record inserted:', bookingPaymentInsertResult);
+                    }
+
+                    // Update teacher_availability to mark as booked
+                    const updateAvailabilityQuery = 'UPDATE teacher_availability SET is_booked = TRUE WHERE id = ?';
+                    connection.query(updateAvailabilityQuery, [teacher_availability_id], (error, updateResult) => {
+                        if (error) {
+                            console.error('Error updating teacher availability:', error);
+                            connection.rollback(() => {
+                                connection.release();
+                                return res.status(500).json({ success: false, error: 'Error completing booking' });
+                            });
+                        } else {
+                            console.log('Teacher availability updated');
+                        }
+                    });
+
+                    // Commit transaction
+                    connection.commit((err) => {
+                        if (err) {
+                            connection.rollback(() => {
+                                connection.release();
+                                console.error('Error committing transaction:', err);
+                                return res.status(500).json({ success: false, error: 'Internal server error' });
+                            });
+                        } else {
+                            connection.release();
+                            return res.status(200).json({ success: true });
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error during transaction:', error);
+                    connection.rollback(() => {
+                        connection.release();
+                        return res.status(500).json({ success: false, error: 'Error completing booking' });
+                    });
+                }
+            });
+        });
+    } catch (error) {
+        console.error('Error in completeBooking endpoint:', error);
+        return res.status(500).json({ success: false, error: 'Internal server error' });
+    }
 });
+
+
+// // Insert booking_payment records
+// await client.query(
+//     'INSERT INTO booking_payment(booking_id, payment_id) VALUES($1, $2)', 
+//     [bookingId, paymentId]
+//     );
+
+// // Update teacher_availability to mark as booked
+//     await client.query(
+//         'UPDATE teacher_availability SET is_booked = TRUE WHERE id = $1', 
+//         [booking.teacher_availability_id]
+//     );
 
 app.listen(5000, () => {
     console.log("listening");
