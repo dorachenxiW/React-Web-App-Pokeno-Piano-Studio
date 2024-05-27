@@ -379,7 +379,7 @@ body {
 }
 
 .sidebar-header h3 {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: #F4C2C2; 
 }
 
@@ -391,7 +391,7 @@ body {
 .sidebar-menu a {
   text-decoration: none;
   color: #F4C2C2; /* Change text color for sidebar links */
-  padding: 20px;
+  padding: 17px;
 }
 
 .sidebar-menu a:hover {
@@ -441,6 +441,38 @@ a {
   right: 10px;
   font-size: 20px;
   cursor: pointer;
+}
+
+.dashboard-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dashboard-button {
+  margin-bottom: 10px;
+}
+
+.dashboard-link {
+  text-decoration: none;
+  color: white;
+}
+
+.dashboard-button a {
+  display: block;
+  padding: 10px 20px;
+  background-color: #F4C2C2;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.dashboard-button a:hover {
+  background-color: #f1356d;
 }
 
 

@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import Profile from "./Profile";
@@ -7,11 +8,12 @@ import StudentProgress from "./StudentProgress";
 import PaymentHistory from "./PaymentHistory";
 import ABRSMResult from "./ABRSMResult";
 import { useHistory } from 'react-router-dom';
+import moment from 'moment';
 
 
 const StudentDashboard = ({ user_id, name, onLogout }) => {
   const { path } = useRouteMatch();
-
+  const [upcomingBookings, setUpcomingBookings] = useState([]);
   const history = useHistory();
 
   const handleDelete = () => {
@@ -24,6 +26,29 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
       .catch((err) => console.log(err));
   };
 
+  useEffect(() => {
+    // Fetch user's student ID
+    axios.get(`http://localhost:5000/student/${user_id}`)
+      .then(response => {
+        const student_id = response.data.student_id;
+        
+        //console.log(student_id)
+        // Fetch bookings for the specific student ID
+        axios.get(`http://localhost:5000/bookings?student_id=${student_id}`)
+          .then(response => {
+            // Filter upcoming bookings
+            //console.log("Bookings:", response.data);
+            const upcoming = response.data.filter(booking => new Date(booking.booking_date) > new Date());
+            console.log("Upcoming:",upcoming)
+            setUpcomingBookings(upcoming);
+          })
+          .catch(error => console.error("Error fetching bookings:", error));
+      })
+      .catch(error => console.error("Error fetching student:", error));
+  }, [user_id]);
+
+  
+
   return (
     <div className="dashboard-container">
       <div className="sidebar">
@@ -31,6 +56,9 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
           <h3>Welcome to Student Dashboard!</h3>
           <h3> {name} </h3>
           <div className="sidebar-menu">
+            <Link to={`${path}/${user_id}`} className="text-white">
+              Dashboard Home
+            </Link>
             <Link to={`${path}/${user_id}/profile`} className="text-white">
               My Profile
             </Link>
@@ -56,8 +84,43 @@ const StudentDashboard = ({ user_id, name, onLogout }) => {
         </div>
       </div>
       <div className="main-content">
-        {/* <h3>Welcome to Student Dashboard!</h3> */}
         <Switch>
+        <Route exact path={`${path}/${user_id}`}>
+          <div style={{ maxHeight: "750px", overflowY: "auto" }}>
+            <h2>Welcome back, {name}!</h2>
+            <p style={{ color: '#f1356d' }}>Click on the left side bar for more detailed information and functions.</p>
+            {upcomingBookings.length > 0 ? (
+              <div style={{display: 'flex', flexDirection: 'column',alignItems: 'center'}}>
+                <h4 style={{margin:'10px'}}>Upcoming Lessons:</h4>
+                
+                {upcomingBookings
+                .sort((a, b) => new Date(a.booking_date) - new Date(b.booking_date)) // Sort by booking date
+                .map(booking => {
+                  //console.log("Sorted Booking:", booking); // Log sorted booking
+                  return booking;
+                })
+                .slice(0, 5) // Take the first three elements after sorting
+                .map(booking => {
+                  // Parse booking date and times using moment.js
+                  const bookingDate = moment(booking.booking_date);
+                  const startTime = moment(booking.start_time, 'HH:mm:ss');
+                  const endTime = moment(booking.end_time, 'HH:mm:ss');
+
+                  return (
+                    <div key={booking.booking_id} className="card mb-3" style={{ maxWidth: '400px', width: '100%' }}>
+                      <div className="card-body" style={{ color: '#f1356d' }} >
+                        <h5 className="card-title">Lesson Date: {bookingDate.format('LL')}</h5>
+                        <p className="card-text">Time: {`${startTime.format('LT')} - ${endTime.format('LT')}`}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p>No upcoming bookings.</p>
+            )}
+          </div>
+          </Route>
           <Route path={`${path}/${user_id}/profile`} component={Profile} />
           <Route
               path={`${path}/${user_id}/calendar`}

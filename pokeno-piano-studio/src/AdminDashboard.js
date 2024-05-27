@@ -27,6 +27,9 @@ const AdminDashboard = ({ user_id, name, onLogout }) => {
             <h3>Welcome to Admin Dashboard!</h3>
             <h3> {name} </h3>
             <div className="sidebar-menu">
+              <Link to={`${path}/${user_id}`} className="text-white">
+                Dashboard Home
+              </Link>
               <Link to={`${path}/${user_id}/profile`} className="text-white">
                 My Profile
               </Link>
@@ -53,6 +56,11 @@ const AdminDashboard = ({ user_id, name, onLogout }) => {
         </div>
         <div className="main-content">
           <Switch>
+            <Route exact path={`${path}/${user_id}`}>
+              <h2> Welcome back,{name}</h2> 
+              <p style={{ color: '#f1356d' }}>Click on the left side bar for more detailed information and functions.</p>
+              <Inquiry/>
+            </Route>
             <Route path={`${path}/${user_id}/profile`} component={Profile} />
             <Route path={`${path}/${user_id}/students`} component={Students} />
             <Route path={`${path}/${user_id}/teachers`} component={Teachers} />
