@@ -34,20 +34,30 @@ const StudentCalendar = ({ user_id}) => {
 
 
     const getEvents = (events) => {
-        return events.map(event => ({
-            title: `${event.student_first_name} ${event.student_last_name} ${event.lesson_type} lesson`,
-            start: event.booking_date.slice(0, 10) + 'T' + event.start_time,
-            end: event.booking_date.slice(0, 10) + 'T' + event.end_time,
-            allDay: false,
-            extendedProps:{
-                bookingId:event.booking_id,
-                studentName:`${event.student_first_name} ${event.student_last_name}`,
-                teacherName:`${event.teacher_first_name} ${event.teacher_last_name}`,
-                startTime:`${event.start_time}`,
-                endTime:`${event.end_time}`
-            }
-        }));
-    }
+        return events.map(event => {
+            const startDate = new Date(event.booking_date);
+            const [startHours, startMinutes, startSeconds] = event.start_time.split(':');
+            startDate.setHours(startHours, startMinutes, startSeconds);
+
+            const endDate = new Date(event.booking_date);
+            const [endHours, endMinutes, endSeconds] = event.end_time.split(':');
+            endDate.setHours(endHours, endMinutes, endSeconds);
+            return {
+                title: `${event.student_first_name} ${event.student_last_name} ${event.lesson_type} lesson`,
+                start: startDate.toISOString(),
+                end: endDate.toISOString(),
+                allDay: false,
+                backgroundColor: event.is_absent ? 'red' : '', // Set color to red if absent
+                extendedProps: {
+                    bookingId: event.booking_id,
+                    studentName: `${event.student_first_name} ${event.student_last_name}`,
+                    teacherName: `${event.teacher_first_name} ${event.teacher_last_name}`,
+                    startTime: `${event.start_time}`,
+                    endTime: `${event.end_time}`
+                }
+            };
+        });
+    };
 
     const formatTime = (time) => {
         const [hours, minutes] = time.split(':');
