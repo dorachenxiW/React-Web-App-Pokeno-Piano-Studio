@@ -480,31 +480,6 @@ app.get('/bookings', (req, res) => {
     }
 });
 
-// Endpoint to add bookings
-app.post('/bookings/add', async (req, res) => {
-    try {
-        const bookingDataArray = req.body; // Assuming the request body contains booking data
-
-        // SQL query to insert booking data into the database
-        const addBookingSQL = `
-            INSERT INTO booking 
-                (teacher_id, student_id, lesson_type, booking_date, start_time, end_time) 
-            VALUES (?, ?, ?, ?, ?, ?)
-        `;
-
-        // Loop through each booking data and execute the SQL query
-
-        for (const booking of bookingDataArray) {
-            const { teacher_id, student_id, lesson_type, booking_date, start_time, end_time } = booking;
-            await db.query(addBookingSQL, [teacher_id, student_id, lesson_type, booking_date, start_time, end_time]);
-        }
-        return res.status(201).json({ message: "Booking(s) added successfully" });
-    } catch (error) {
-        console.error("Error adding booking:", error);
-        return res.status(500).json({ error: "Internal server error" });
-    }
-});
-
 // Endpoint to fetch teacher ID based on user ID
 app.get('/teacher/:user_id', (req, res) => {
     const { user_id } = req.params;
@@ -645,7 +620,6 @@ app.post('/completeBooking', async (req, res) => {
 
                 try {
                     // Insert payment record
-                    console.log("going in payment query")
                     const paymentInsertResult = await new Promise((resolve, reject) => {
                         connection.query(
                             'INSERT INTO payment(amount, payment_date) VALUES (?, ?)',
@@ -662,11 +636,10 @@ app.post('/completeBooking', async (req, res) => {
                     });
 
                     const paymentId = paymentInsertResult.insertId;
-                    console.log('Payment ID:', paymentId);
+                    //console.log('Payment ID:', paymentId);
 
                     for (let booking of bookingDataArray) {
-                        console.log(booking)
-                        console.log('going in booking query')
+                        //console.log(booking)
                         // Insert booking record
                         const bookingInsertResult = await new Promise((resolve, reject) => {
                             connection.query(
@@ -684,7 +657,7 @@ app.post('/completeBooking', async (req, res) => {
                         });
 
                         const bookingID = bookingInsertResult.insertId;
-                        console.log(bookingID);
+                        //console.log(bookingID);
 
                         // Insert into booking_payment table
                         const bookingPaymentInsertResult = await new Promise((resolve, reject) => {
@@ -835,6 +808,71 @@ app.get('/student-exam-results/:studentId', (req, res) => {
       res.status(200).json(results);
     });
   });
+
+// Endpoint to get payment history using student_id
+app.get('/paymentHistory/:student_id', (req, res) => {
+    const student_id = parseInt(req.params.student_id);
+    const query = `
+        SELECT DISTINCT p.payment_id, p.amount, p.payment_date 
+        FROM payment p
+        JOIN booking_payment bp ON p.payment_id = bp.payment_id
+        JOIN booking b ON bp.booking_id = b.booking_id
+        WHERE b.student_id = ?
+        ORDER BY p.payment_date DESC
+    `;
+
+    db.query(query, [student_id], (err, results) => {
+        if (err) {
+            console.error('Error fetching payment history:', err);
+            res.status(500).json({ error: 'Database error' });
+            return;
+        }
+        if (results.length > 0) {
+            res.json(results);
+        } else {
+            res.status(404).json({ error: 'No payment history found for this student' });
+        }
+    });
+});
+
+app.get('/payments/year-to-date', (req, res) => {
+    const currentYear = new Date().getFullYear();
+    const query = `
+        SELECT SUM(amount) AS total_amount
+        FROM payment
+        WHERE YEAR(payment_date) = ?
+    `;
+
+    db.query(query, [currentYear], (err, results) => {
+        if (err) {
+            console.error('Error fetching YTD payments:', err);
+            res.status(500).json({ error: 'Database error' });
+            return;
+        }
+        res.json(results[0]);
+    });
+});
+
+app.get('/payments/monthly', (req, res) => {
+    const currentYear = new Date().getFullYear();
+    const query = `
+        SELECT MONTH(payment_date) AS month, SUM(amount) AS total_amount
+        FROM payment
+        WHERE YEAR(payment_date) = ?
+        GROUP BY MONTH(payment_date)
+        ORDER BY MONTH(payment_date)
+    `;
+
+    db.query(query, [currentYear], (err, results) => {
+        if (err) {
+            console.error('Error fetching monthly payments:', err);
+            res.status(500).json({ error: 'Database error' });
+            return;
+        }
+        res.json(results);
+    });
+});
+
 
 
 app.listen(5000, () => {
