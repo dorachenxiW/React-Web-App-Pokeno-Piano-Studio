@@ -67,7 +67,7 @@ const TeacherDashboard = ({ user_id, name, onLogout }) => {
              <h2>Welcome back, {name}!</h2>
              <p style={{ color: '#f1356d' }}>Click on the left side bar for more detailed information and functions.</p>
              <div>
-                 <TeacherCalendar user_id={user_id}/>
+                 <h4>Upcoming Lessons</h4>
              </div>
              
          </Route>
