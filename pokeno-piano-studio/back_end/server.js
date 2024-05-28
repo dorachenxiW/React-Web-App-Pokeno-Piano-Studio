@@ -447,7 +447,7 @@ app.get('/bookings', (req, res) => {
     const { teacher_id, student_id } = req.query;
 
     if (teacher_id) {
-        sql += ` WHERE booking.teacher_id = ?`;
+        sql += ` WHERE booking.teacher_id = ? ORDER BY booking.booking_date ASC`;
         db.query(sql, [teacher_id], (err, data) => {
             //console.log("goingin");
             if (err) {
