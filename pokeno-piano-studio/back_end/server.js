@@ -873,6 +873,91 @@ app.get('/payments/monthly', (req, res) => {
     });
 });
 
+app.post('/bookings/markAbsent', async (req, res) => {
+    const { booking_id, student_id } = req.body;
+
+    if (!booking_id || !student_id) {
+        return res.status(400).json({ success: false, error: 'Booking ID and Student ID are required' });
+    }
+
+    try {
+        db.getConnection((err, connection) => {
+            if (err) {
+                console.error('Error getting database connection:', err);
+                return res.status(500).json({ success: false, error: 'Internal server error' });
+            }
+
+            // Begin transaction
+            connection.beginTransaction(async (err) => {
+                if (err) {
+                    connection.release();
+                    console.error('Error beginning transaction:', err);
+                    return res.status(500).json({ success: false, error: 'Internal server error' });
+                }
+
+                try {
+                    // Update booking to mark as absent
+                    await new Promise((resolve, reject) => {
+                        connection.query(
+                            'UPDATE booking SET is_absent = 1 WHERE booking_id = ?',
+                            [booking_id],
+                            (error, result) => {
+                                if (error) {
+                                    console.error('Error updating booking:', error);
+                                    reject(error);
+                                } else if (result.affectedRows === 0) {
+                                    reject(new Error('Booking not found'));
+                                } else {
+                                    resolve(result);
+                                }
+                            }
+                        );
+                    });
+
+                    // Insert make-up token record
+                    await new Promise((resolve, reject) => {
+                        connection.query(
+                            'INSERT INTO make_up_token (student_id, issued_date) VALUES (?, ?)',
+                            [student_id, new Date()],
+                            (error, result) => {
+                                if (error) {
+                                    console.error('Error inserting make-up token:', error);
+                                    reject(error);
+                                } else {
+                                    resolve(result);
+                                }
+                            }
+                        );
+                    });
+
+                    // Commit transaction
+                    connection.commit((err) => {
+                        if (err) {
+                            connection.rollback(() => {
+                                connection.release();
+                                console.error('Error committing transaction:', err);
+                                return res.status(500).json({ success: false, error: 'Internal server error' });
+                            });
+                        } else {
+                            connection.release();
+                            return res.status(200).json({ success: true });
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error during transaction:', error);
+                    connection.rollback(() => {
+                        connection.release();
+                        return res.status(500).json({ success: false, error: error.message });
+                    });
+                }
+            });
+        });
+    } catch (error) {
+        console.error('Error in markAbsent endpoint:', error);
+        return res.status(500).json({ success: false, error: 'Internal server error' });
+    }
+});
+
 
 
 app.listen(5000, () => {

@@ -54,7 +54,8 @@ const TeacherCalendar = ({ user_id }) => {
                     studentName: `${event.student_first_name} ${event.student_last_name}`,
                     teacherName: `${event.teacher_first_name} ${event.teacher_last_name}`,
                     startTime: `${event.start_time}`,
-                    endTime: `${event.end_time}`
+                    endTime: `${event.end_time}`,
+                    isAbsent: event.is_absent
                 }
             };
         });
@@ -80,7 +81,6 @@ const TeacherCalendar = ({ user_id }) => {
         
         return `${formattedTime}:${minutes}${ampm}`;
     };
-    
 
     return (
         <div>
