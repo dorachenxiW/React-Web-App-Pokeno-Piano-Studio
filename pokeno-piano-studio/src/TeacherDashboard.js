@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, Route, Switch, useRouteMatch } from "react-router-dom";
 import Profile from "./Profile";
@@ -7,11 +8,11 @@ import { useHistory } from 'react-router-dom';
 import Availability from "./Availability";
 import RecordStudentProgress from "./RecordStudentProgress";
 import RecordExamResult from "./RecordExamResult";
-
-
+import moment from 'moment';
 
 const TeacherDashboard = ({ user_id, name, onLogout }) => {
     const { path } = useRouteMatch();
+    const [upcomingBookings, setUpcomingBookings] = useState([]);
     const history = useHistory();
 
     const handleDelete = () => {
@@ -21,8 +22,38 @@ const TeacherDashboard = ({ user_id, name, onLogout }) => {
           history.push('/login'); // Redirect to the login page
       }).catch(err => console.log(err));
     }
+    useEffect(() => {
+      const fetchBookings = () => {
+        // Fetch user's student ID
+        axios.get(`http://localhost:5000/teacher/${user_id}`)
+          .then(response => {
+            const teacher_id = response.data.teacher_id;
+            
+            // Fetch bookings for the specific student ID
+            axios.get(`http://localhost:5000/bookings?teacher_id=${teacher_id}`)
+              .then(response => {
+                // Filter upcoming bookings
+                const upcoming = response.data.filter(booking => new Date(booking.booking_date) > new Date());
+                setUpcomingBookings(upcoming);
+              })
+              .catch(error => console.error("Error fetching bookings:", error));
+          })
+          .catch(error => console.error("Error fetching teacher:", error));
+      };
 
-   
+      const unlisten = history.listen(() => {
+        // Refresh bookings when the route changes
+        fetchBookings();
+      });
+    
+      // Fetch bookings when the component mounts
+      fetchBookings();
+    
+      // Cleanup the listener when the component unmounts
+      return () => {
+        unlisten();
+      };
+    }, [user_id, history]);
   
     return (
         <div className="dashboard-container">
@@ -63,14 +94,51 @@ const TeacherDashboard = ({ user_id, name, onLogout }) => {
       </div>
       <div className="main-content">
         <Switch>
-          <Route exact path={`${path}/${user_id}`} >
-             <h2>Welcome back, {name}!</h2>
-             <p style={{ color: '#f1356d' }}>Click on the left side bar for more detailed information and functions.</p>
-             <div>
-                 <h4>Upcoming Lessons</h4>
-             </div>
-             
-         </Route>
+          <Route exact path={`${path}/${user_id}`}>
+            <div style={{ maxHeight: "750px", overflowY: "auto" }}>
+              <h2>Welcome back, {name}!</h2>
+              <p style={{ color: '#f1356d' }}>Click on the left side bar for more detailed information and functions.</p>
+              {upcomingBookings.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <h4>Upcoming Lessons:</h4>
+                  
+                  {upcomingBookings
+                    .sort((a, b) => new Date(a.booking_date) - new Date(b.booking_date)) // Sort by booking date
+                    .slice(0,4)
+                    .map(booking => {
+                      const startTime = moment(booking.start_time, 'HH:mm:ss');
+                      const endTime = moment(booking.end_time, 'HH:mm:ss');
+                      
+                      return (
+                        <div key={booking.booking_id} className="card mb-3" style={{ maxWidth: '400px', width: '100%', backgroundColor: '#d3d3d3' }}>
+                          <div className="card-body" style={{ color: '#000' }}>
+                            <h5 className="card-title">Lesson Date: {new Date(booking.booking_date).toLocaleDateString()}</h5>
+                            <p className="card-text">Time: {`${startTime.format('LT')} - ${endTime.format('LT')}`}</p>
+                            {!booking.is_absent ? (
+                              <button
+                                className="btn btn-warning"
+                                disabled
+                              >
+                                On Schedule
+                              </button>
+                            ) : (
+                              <button
+                                className="btn btn-secondary"
+                                disabled
+                              >
+                                Sick Leave Applied
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              ) : (
+                <p>No upcoming lessons to teach.</p>
+              )}
+            </div>
+          </Route>
           <Route path={`${path}/${user_id}/profile`} component={Profile} />
           <Route path={`${path}/${user_id}/record`} component={RecordStudentProgress} />
           <Route path={`${path}/${user_id}/exam`} component={RecordExamResult} />
