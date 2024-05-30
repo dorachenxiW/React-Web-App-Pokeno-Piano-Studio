@@ -5,7 +5,7 @@ const Pricing = () => {
     const apiUrl = process.env.REACT_APP_API_URL
 
     useEffect (() =>{
-        fetch(`${apiUrl}//pricing`)
+        fetch(`${apiUrl}/pricing`)
         .then(res => res.json())
         .then(data => setData(data))
         .catch (err => console.log(err));
