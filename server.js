@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import cookieParser from 'cookie-parser';
 
 const salt = 10;
+const PORT = process.env.PORT || 5000
 
 const app = express();
 app.use(express.json());
@@ -966,6 +967,6 @@ app.post('/bookings/markAbsent', async (req, res) => {
 
 
 
-app.listen(5000, () => {
+app.listen(PORT, () => {
     console.log("listening");
 })
