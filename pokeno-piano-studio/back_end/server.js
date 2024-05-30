@@ -22,7 +22,8 @@ app.use(cors(corsOptions));
 
 app.use(cookieParser());
 
-/* const db = mysql.createConnection({
+/* const db = mysql.createPool({
+    connectionLimit:10,
     host: 'localhost',
     user: 'root',
     password: 'password',
