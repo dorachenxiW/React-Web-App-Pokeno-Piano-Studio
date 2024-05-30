@@ -5,6 +5,7 @@ const Pricing = () => {
     const apiUrl = process.env.REACT_APP_API_URL
 
     useEffect (() =>{
+        console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
         fetch(`${apiUrl}/pricing`)
         .then(res => res.json())
         .then(data => setData(data))
