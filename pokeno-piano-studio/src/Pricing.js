@@ -4,7 +4,7 @@ const Pricing = () => {
     const [data, setData] = useState([]);
 
     useEffect (() =>{
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/pricing`)
+        fetch(`https://pokeno-piano-studio-62aa4092c635.herokuapp.com/pricing`)
         .then(res => res.json())
         .then(data => setData(data))
         .catch (err => console.log(err));
