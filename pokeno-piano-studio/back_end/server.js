@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 
 const corsOptions = {
-    origin: ["https://benevolent-paprenjak-c87eb3.netlify.app"],
+    origin: ["https://pokeno-piano-studio.vercel.app"],
     methods: ["POST", "GET"],
     credentials: true
 };
