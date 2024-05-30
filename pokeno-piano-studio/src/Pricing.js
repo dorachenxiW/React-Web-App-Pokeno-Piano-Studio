@@ -4,7 +4,7 @@ const Pricing = () => {
     const [data, setData] = useState([]);
 
     useEffect (() =>{
-        fetch('http://localhost:5000/pricing')
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/pricing`)
         .then(res => res.json())
         .then(data => setData(data))
         .catch (err => console.log(err));

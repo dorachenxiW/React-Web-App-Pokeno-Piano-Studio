@@ -7,13 +7,19 @@ import cookieParser from 'cookie-parser';
 
 const salt = 10;
 
+const PORT = 5000;
+
 const app = express();
 app.use(express.json());
-app.use(cors({
-    origin: ["http://localhost:3000"],
+
+const corsOptions = {
+    origin: ["http://localhost:3000", "https://pokeno-piano-studio.vercel.app"],
     methods: ["POST", "GET"],
     credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
+
 app.use(cookieParser());
 
 /* const db = mysql.createConnection({
@@ -25,10 +31,10 @@ app.use(cookieParser());
 
 const db = mysql.createPool({
     connectionLimit: 10, // Adjust this limit as per your requirements
-    host: 'localhost',
-    user: 'root',
-    password: 'password',
-    database: 'PPS_db'
+    host: 'us-cluster-east-01.k8s.cleardb.net',
+    user: 'b87ef86efac0b9',
+    password: '893a2e01',
+    database: 'heroku_a0b94bad94609c5'
 });
 
 
@@ -965,7 +971,6 @@ app.post('/bookings/markAbsent', async (req, res) => {
 });
 
 
-
-app.listen(5000, () => {
-    console.log("listening");
-})
+app.listen(process.env.PORT || PORT, () => {
+    console.log(`server running on port ${PORT}`)
+});
