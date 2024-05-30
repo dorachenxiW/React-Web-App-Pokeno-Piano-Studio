@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 
 const Pricing = () => {
     const [data, setData] = useState([]);
+    const apiUrl = process.env.REACT_APP_API_URL
 
     useEffect (() =>{
-        fetch(`https://pokeno-piano-studio-62aa4092c635.herokuapp.com/pricing`)
+        fetch(`${apiUrl}//pricing`)
         .then(res => res.json())
         .then(data => setData(data))
         .catch (err => console.log(err));
