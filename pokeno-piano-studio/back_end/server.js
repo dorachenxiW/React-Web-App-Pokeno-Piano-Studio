@@ -203,19 +203,25 @@ app.post('/signup', (req, res) => {
     const studentSql = "INSERT INTO student (`first_name`,`last_name`,`email`, `user_id`) VALUES (?)";
     const getUserIdSql = "SELECT user_id FROM user WHERE email = ?";
 
+    // Proceed with registration
     bcrypt.hash(req.body.password.toString(), salt, (err, hash) => {
-        if (err) return res.json({ error: "Error for hashing password." })
+        if (err) return res.json({ Error: "Error hashing password" });
         const values = [
             req.body.first_name,
             req.body.last_name,
             req.body.email,
             req.body.role,
             hash
-        ]
+        ];
         db.query(userSql, [values], (err, result) => {
             if (err) {
-                console.error("Error inserting user data:", err);
-                return res.json({ Error: "Inserting user data error in server" });
+                if (err.code === 'ER_DUP_ENTRY') {
+                    // Email already exists
+                    return res.json({ Error: "Email already registered" });
+                } else {
+                    console.error("Error inserting user data:", err);
+                    return res.json({ Error: "Inserting user data error in server" });
+                }
             }
             // Fetch user_id of the inserted user
             db.query(getUserIdSql, [req.body.email], (err, getUserIdResult) => {

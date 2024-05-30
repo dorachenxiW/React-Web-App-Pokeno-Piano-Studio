@@ -15,16 +15,20 @@ const GetStarted = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         axios.post("http://localhost:5000/signup", values)
-        .then(res => {
-            if (res.data.Status === "Success") {
-                alert("New student created succesfully.")
-                history.push('/login')
-            } else {
-                alert("Error: " + res.data.error); // Display specific error message from backend
-            }
-        })
-        .then(err => console.log(err));
-    }
+            .then(res => {
+                if (res.data.Status === "Success") {
+                    alert("New student created successfully.");
+                    history.push('/login');
+                } else {
+                    alert("Error: " + res.data.Error); // Display specific error message from backend
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                alert("An error occurred while creating the account. Please try again.");
+            });
+    };
+    
     return ( 
             <div className="container">
             <div className="row justify-content-center">
